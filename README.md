@@ -147,6 +147,33 @@ ClaudeSkills/
 "unreal-dev-kb 사용해서 Lumen 시각화 명령 알려줘"
 ```
 
+## 새 plugin 추가 (헬퍼 스크립트)
+
+`scripts/new-plugin.sh`로 plugin skeleton 자동 생성:
+
+```bash
+cd /mnt/c/Users/admin/source/repos/ClaudeSkills
+./scripts/new-plugin.sh <plugin-name> "<description>" [category]
+
+# 예시
+./scripts/new-plugin.sh ue5-post-process "UE5 Post Process cvar 카탈로그"
+./scripts/new-plugin.sh ue5-style "UE5 코딩 스타일" workflow
+```
+
+**자동 처리**:
+- 디렉토리 구조 (`<name>/.claude-plugin/`, `<name>/skills/<name>/`)
+- `plugin.json` + `SKILL.md` + `README.md` skeleton
+- `.claude-plugin/marketplace.json`에 plugin 등록 (jq 사용)
+
+**수동으로 채워야 할 것**:
+1. SKILL.md 본문 (실제 지식)
+2. `plugin.json`/`marketplace.json`의 `keywords` (현재 빈 배열)
+3. 마스터 README의 시나리오 매트릭스 (해당 시)
+4. `git add . && git commit && git push`
+5. `claude plugin install <name>@claude-skills-jsc`
+
+> 의존성: `jq` 필요 (대부분의 시스템에 기본 설치 또는 `apt install jq`/`brew install jq`)
+
 ## 갱신 / 유지보수
 
 엔진/도구 버전 업그레이드 시:
