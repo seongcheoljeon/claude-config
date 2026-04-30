@@ -1,6 +1,6 @@
 ---
 name: ue5-shaders
-description: Unreal Engine 5 HLSL shader tree (Engine/Shaders) reference for UE 5.7.4+. Use when reading, debugging, modifying, or optimizing .usf/.ush shader code. Covers Material translator slots, Vertex Factory contract, BasePass / ShadowDepth / Velocity passes, legacy ShadingModels (BRDF, GBuffer encoding) and Substrate closure-tree BSDF, Lumen GI/Reflections, Nanite cluster culling/SW rasterizer/material shading, Virtual Shadow Maps page system, TSR temporal upscaler, Ray/Path Tracing payloads & masks, Sky Atmosphere / Volumetric Cloud / Heterogeneous Volumes, Translucency/OIT/Decals/MegaLights/SSRT/HairStrands, post-process (Bloom/DOF/MotionBlur/SSD denoise/ACES), Mobile path, GPU Scene/Instance Culling, MaterialCache, Distance Field, and Slate StandaloneRenderer. Triggers on any UE5 shader question, file lookup, branch condition / #define meaning, function signature, or "where is X" / "how does Y work" query about the engine shader pipeline.
+description: UE 5.7.4+ Engine/Shaders HLSL 트리(.usf/.ush) 라우터 레퍼런스. Material translator, Vertex Factory, BasePass/ShadowDepth/Velocity, legacy ShadingModels(BRDF/GBuffer)+Substrate BSDF, Lumen/Nanite/VSM/TSR HLSL 흐름, Ray/Path Tracing payload, Sky Atmosphere, Translucency/Decals, Post-process. 트리거: "엔진 셰이더 코드", "BasePass HLSL", "Substrate BSDF", "Lumen 셰이더", "Nanite 셰이더", MaterialTemplate.ush, "Vertex Factory contract", "셰이더 #define", "where is X usf". 다루지 않음: cvar (→ unreal-dev-kb), RDG C++ API 작성 (→ ue5-rdg).
 verified-against: UE 5.7.4 @ commit 260bb2e1c561
 verification: SKILL.md routing only — see individual files for content verification level
 ---
@@ -83,3 +83,17 @@ When working on production code, **always re-read the source** before relying on
 - Niagara shaders — live in `Engine/Plugins/FX/Niagara/Shaders/`, not in this tree.
 - Per-platform RHI shader compilation pipeline (`ShaderCompiler*.cpp`).
 - Material editor UX, asset cooking.
+
+---
+
+## Companion plugins
+
+본 plugin은 **Engine/Shaders HLSL 트리 라우터**에 특화. 다음 plugin과 동시 활성화 시 시너지:
+
+| 시나리오 | 협력 plugin | 본 plugin 역할 | 협력 plugin 역할 |
+|---|---|---|---|
+| 셰이더 디버깅/시각화 | `unreal-dev-kb` | HLSL 코드 위치/의미 | `r.Shaders.*` cvar, ShowFlag, ViewMode |
+| C++ 패스에서 셰이더 호출 | `ue5-rdg` | 호출 대상 .usf 분석 | C++ 패스 작성 패턴 |
+| 머티리얼 Custom Node HLSL | `unreal-dev-kb` | MaterialTemplate.ush 트리 | Custom Node 헬퍼 함수 카탈로그 |
+
+**검색 흐름 권장**: 본 plugin으로 셰이더 코드 위치 파악 → `unreal-dev-kb`의 시각화 명령으로 GPU 출력 확인 → `ue5-rdg`로 호출 컨텍스트 확장.

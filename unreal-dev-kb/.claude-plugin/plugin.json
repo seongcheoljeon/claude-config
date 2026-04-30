@@ -1,7 +1,7 @@
 {
   "name": "unreal-dev-kb",
-  "description": "UnrealEngine 셰이더/렌더링/머티리얼/이펙트/디버깅 영역 cvar/매크로/명령 카탈로그 약 2,000+ 항목 (소스 빌드 엔진 직접 추출)",
-  "version": "1.0.0",
+  "description": "UE5 셰이더/렌더링/머티리얼/이펙트/디버깅 cvar/매크로/콘솔명령 약 2,000+ 카탈로그 (9개 영역). 소스 빌드 엔진 직접 추출. 협력: ue5-rdg(C++ API), ue5-shaders(HLSL 코드)",
+  "version": "1.1.0",
   "author": {
     "name": "Seongcheol Jeon",
     "email": "seongcheoljeon@mistilgames.com"

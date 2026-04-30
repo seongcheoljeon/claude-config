@@ -1,6 +1,6 @@
 ---
 name: gpu-fluid-sim
-description: GPU 기반 Eulerian fluid simulation (Stable Fluids, Navier-Stokes) 구현 가이드. UE5 Compute Shader / Niagara Grid, Houdini Gas OpenCL / Pyro 적용 시 사용. 트리거 키워드 — Navier-Stokes, semi-Lagrangian advection, MacCormack, BFECC, Jacobi pressure solve, Red-Black Gauss-Seidel, Multigrid, PCG, vorticity confinement, curl noise, fluid simulation, smoke, fire, buoyancy, Niagara Grid2D, Pyro solver, Gas OpenCL, FLIP, PIC, APIC, MAC grid, staggered grid, level set, VDB, sparse grid.
+description: GPU Eulerian fluid simulation (Stable Fluids / Navier-Stokes) 알고리즘 가이드. UE5 Compute Shader/Niagara Grid, Houdini Gas OpenCL/Pyro 적용. Advection(semi-Lagrangian/MacCormack/BFECC), Pressure Jacobi/Red-Black GS, Vorticity Confinement, Buoyancy, Curl Noise. 트리거: Navier-Stokes, "Stable Fluids", "fluid simulation", "smoke/fire 시뮬", "Pyro solver", "Niagara Grid2D/3D", MacCormack, BFECC, "Jacobi pressure", "vorticity confinement". 다루지 않음: 파티클 기반(FLIP/PIC/APIC) 일반 구현, Niagara cvar (→ unreal-dev-kb).
 ---
 
 # GPU Fluid Simulation (Stable Fluids / GPU Gems Ch.38)
@@ -107,3 +107,18 @@ Semi-Lagrangian은 발산하지 않으나 정확도를 위해: `dt · |u_max| / 
 - [ ] Semi-Lagrangian: 큰 dt에서도 blow-up 없어야 함
 - [ ] BFECC 교체 시 오버슛 체크 (dye 값이 0~1 밖으로 나가지 않는지)
 - [ ] Pressure R32F 확인 (R16F로 실수 시 장시간 시뮬에서 발산)
+
+---
+
+## 함께 활성화되면 좋은 plugin
+
+본 plugin은 **유체 시뮬 알고리즘 가이드**에 특화. 다음 plugin과 동시 활성화 시 시너지:
+
+| 시나리오 | 협력 plugin | 본 plugin 역할 | 협력 plugin 역할 |
+|---|---|---|---|
+| UE5에서 Compute Shader로 구현 | `ue5-rdg` | 알고리즘 + HLSL 의사코드 | RDG Compute Pass 작성 패턴 |
+| UE5 Niagara Grid 사용 | `unreal-dev-kb` | Grid2D/3D 알고리즘 | `fx.Niagara.*` cvar (튜닝/디버깅) |
+| HLSL 셰이더 문법/구조 | `ue5-shaders` | 알고리즘 | 엔진 셰이더 컨벤션, 헬퍼 함수 |
+| Houdini DOP/Pyro 구현 | `hdk-reference` | Pyro 매핑 | Houdini HDK API |
+
+**검색 흐름 권장**: 알고리즘 결정(본 plugin) → 플랫폼 선택 (UE5/Houdini) → 해당 플랫폼 plugin으로 구현.

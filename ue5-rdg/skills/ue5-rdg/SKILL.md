@@ -1,18 +1,6 @@
 ---
 name: ue5-rdg
-description: >
-  Unreal Engine 5 Render Dependency Graph (RDG) 전문 레퍼런스 스킬.
-  UE5 RDG API, GraphBuilder 패턴, Shader Parameter 바인딩, Resource 관리,
-  Compute/Raster/Copy Pass 작성, Scene View Extension 연동, Pass Culling,
-  Transient Resource, UAV/SRV/RTV 바인딩, RDG 디버깅 등을 다룹니다.
-  다음 상황에서 반드시 이 스킬을 사용하세요:
-  - RDG, FRDGBuilder, AddPass, FRDGTexture, FRDGBuffer 등 언급 시
-  - Custom Render Pass 작성 요청 시
-  - Scene View Extension (SVE) + RDG 연동 시
-  - Global Shader / IMPLEMENT_GLOBAL_SHADER 패턴 질문 시
-  - Compute Shader, Raster Pass, Copy Pass 구현 질문 시
-  - RDG 리소스 생명주기, Transient Resource, Extract 질문 시
-  - UE5 렌더링 파이프라인 확장 관련 모든 질문
+description: UE5 Render Dependency Graph (RDG) C++ API 작성 패턴 레퍼런스. FRDGBuilder/AddPass 사용법, Compute/Raster/Copy Pass 구현, Scene View Extension 연동, Resource 생명주기, Transient Resource, UAV/SRV/RTV 바인딩, Buffer Readback, Uniform Buffer, Substrate UE5.7 연동. 트리거: "RDG 패스 작성", FRDGBuilder, AddPass, FRDGTexture, FRDGBuffer, "Custom Render Pass", IMPLEMENT_GLOBAL_SHADER, "Compute Shader RDG", "Scene View Extension". 다루지 않음: RDG cvar/디버그 옵션 (→ unreal-dev-kb), 엔진 HLSL 코드 (→ ue5-shaders).
 ---
 
 # UE5 RDG (Render Dependency Graph) Reference Skill
@@ -152,3 +140,17 @@ GraphBuilder.QueueTextureExtraction(MyRDGTexture, &OutPooled);
 
 위 Quick Reference 표의 파일을 읽어서 답변하세요.
 예) Compute Pass 심화 → `references/04_compute_pass.md` 읽기
+
+---
+
+## 함께 활성화되면 좋은 plugin
+
+본 plugin은 **RDG C++ API 작성 패턴**에 특화. 다음 plugin과 동시 활성화 시 시너지:
+
+| 시나리오 | 협력 plugin | 본 plugin 역할 | 협력 plugin 역할 |
+|---|---|---|---|
+| RDG 패스 작성 + 디버깅 | `unreal-dev-kb` | C++ API 패턴 | RDG 디버그 cvar (`r.RDG.*`) |
+| 패스가 호출하는 HLSL 셰이더 | `ue5-shaders` | C++ 패스 코드 | 호출 대상 .usf/.ush 코드 |
+| RDG 패스의 C++ 코드 스타일 | `ue5-coding-convention` | RDG 코드 패턴 | UE5 C++ 명명/포맷 규칙 |
+
+**검색 흐름 권장**: 본 plugin으로 패스 작성 → `ue5-shaders`로 셰이더 코드 확인 → `unreal-dev-kb`의 cvar로 런타임 디버깅.

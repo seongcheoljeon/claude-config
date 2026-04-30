@@ -1,5 +1,7 @@
 # ClaudeSkills
 
+> Marketplace ID: `claude-skills-jsc` · Version: 1.1.0
+
 Seongcheol Jeon의 Claude Code 플러그인 마켓플레이스. UE5 / Houdini / HDK / GPU 시뮬레이션 작업용 6개 플러그인.
 
 ## 플러그인 목록
@@ -81,7 +83,6 @@ ClaudeSkills/
 ├── hdk-reference/
 │   ├── .claude-plugin/plugin.json
 │   └── skills/hdk-reference/SKILL.md
-├── *.skill                           ← (레거시 ZIP 패키지, 백업용 보존)
 └── README.md
 ```
 
@@ -100,37 +101,75 @@ ClaudeSkills/
 
 ## 플러그인 간 영역 관계
 
-| 영역 | 관련 플러그인 | 차이 |
-|---|---|---|
-| **RDG** | `unreal-dev-kb` (cvar 카탈로그) + `ue5-rdg` (API 패턴) | 카탈로그 vs 코드 작성 패턴 |
-| **셰이더** | `unreal-dev-kb` (Shader Compiler cvar) + `ue5-shaders` (HLSL 트리) | cvar vs 셰이더 코드 자체 |
-| **머티리얼** | `unreal-dev-kb` (HLSL Custom Node) + `ue5-shaders` (Material translator) | Custom Node vs 엔진 셰이더 |
-| **코딩** | `ue5-coding-convention` (C++ 스타일) | 단독 |
-| **GPU 시뮬** | `gpu-fluid-sim` (알고리즘) | 단독 |
-| **Houdini** | `hdk-reference` (C++ HDK) | 단독 |
+각 plugin은 **다른 관점**을 다루며, 영역명이 같아 보여도 정보 종류가 다름:
 
-→ 영역 겹치는 플러그인은 **함께 사용**하면 시너지 (cvar 추천 + 코드 패턴 동시 제공).
+| 영역 | 관련 플러그인 | 다루는 정보 차이 |
+|---|---|---|
+| **RDG** | `unreal-dev-kb` + `ue5-rdg` | cvar (debug 옵션) vs C++ API 코드 패턴 |
+| **셰이더** | `unreal-dev-kb` + `ue5-shaders` | 컴파일러 cvar vs HLSL 코드 자체 |
+| **머티리얼** | `unreal-dev-kb` + `ue5-shaders` | Custom Node 헬퍼 vs 엔진 Material translator |
+| **코딩 스타일** | `ue5-coding-convention` | 단독 영역 |
+| **GPU 시뮬** | `gpu-fluid-sim` | 단독 영역 (UE/Houdini 양쪽 적용) |
+| **Houdini** | `hdk-reference` | 단독 영역 |
+
+## 시나리오별 plugin 조합 매트릭스
+
+작업 상황별로 **어떤 plugin이 자동 활성화되는지** + **무엇을 묻기 좋은지**:
+
+| 작업 상황 | 활성화 plugin | 사용 예시 |
+|---|---|---|
+| RDG 패스 신규 작성 | `ue5-rdg` + `unreal-dev-kb` | "Compute Pass 작성 + ImmediateMode 디버깅 cvar" |
+| RDG 패스 크래시 디버깅 | `unreal-dev-kb` (+ `ue5-rdg`) | "RDG lambda에서 죽는데 cvar 셋?" |
+| 엔진 셰이더 코드 분석 | `ue5-shaders` (+ `unreal-dev-kb`) | "BasePass HLSL 어디 정의돼? Substrate 분기는?" |
+| Lumen GI 디버깅 | `unreal-dev-kb` + `ue5-shaders` | "Lumen visualize cvar + HLSL 흐름" |
+| Niagara 이펙트 작업 | `unreal-dev-kb` (+ `gpu-fluid-sim`) | "Niagara Solo 모드 + GPU Grid fluid 알고리즘" |
+| 머티리얼 Custom Node | `unreal-dev-kb` (+ `ue5-shaders`) | "Custom Node에서 ScreenPosition + MaterialTemplate" |
+| UE5 신규 클래스 작성 | `ue5-coding-convention` (+ `unreal-dev-kb`) | "UCLASS 명명 + 데이터 검증 패턴" |
+| GPU 프로파일링 | `unreal-dev-kb` | "stat gpu vs ProfileGPU 차이" |
+| RenderDoc/PIX 캡처 | `unreal-dev-kb` | "RenderDoc 캡처 명령 + 셰이더 이름 표시 cvar" |
+| 메모리 누수 추적 | `unreal-dev-kb` | "memreport 명령 + r.MemReport.* 옵션" |
+| Houdini SOP plugin | `hdk-reference` | "newSopOperator 진입점 + Data ID 관리" |
+| Houdini Pyro/Gas | `hdk-reference` + `gpu-fluid-sim` | "Gas OpenCL DOP에서 Stable Fluids 구현" |
+| GPU Fluid Sim (UE5) | `gpu-fluid-sim` + `ue5-rdg` (+ `unreal-dev-kb`) | "Niagara Grid2D로 Pyro 포팅 + Compute Pass + 셰이더 cvar" |
+
+→ 자동 트리거가 정확하지 않으면 명시적 호출: `/<plugin-name>` 또는 "<plugin-name> 사용해서 ..."
+
+## 명시적 트리거 (자동 트리거 우회)
+
+특정 plugin만 활성화하고 싶을 때:
+```text
+/unreal-dev-kb        # 마켓플레이스 prefix 없는 짧은 형식
+/ue5-rdg
+```
+
+또는 자연어:
+```text
+"unreal-dev-kb 사용해서 Lumen 시각화 명령 알려줘"
+```
 
 ## 갱신 / 유지보수
 
 엔진/도구 버전 업그레이드 시:
 
 1. 해당 플러그인의 SKILL.md 또는 부속 .md 파일 갱신
-2. `plugin.json`의 `version` bump
+2. `plugin.json`의 `version` bump (예: 1.1.0 → 1.1.1)
 3. `.claude-plugin/marketplace.json`의 해당 항목 `version` bump
 4. Git commit + push
 5. 다른 PC에서: `git pull` + `claude plugin update <plugin-name>`
 
-## 레거시 `.skill` 파일
+## 변경 이력
 
-기존 ZIP 형식 `.skill` 파일 (5개)은 **백업용으로 보존**:
-- `gpu-fluid-sim.skill`
-- `hdk-reference.skill`
-- `ue5-coding-convention.skill`
-- `ue5-rdg.skill`
-- `ue5-shaders.skill`
+### v1.1.0 (2026-04-30)
+- SKILL.md description 압축 (트리거 정확도 ↑) — 6개 plugin
+- 각 SKILL.md에 "협력 plugin" 섹션 추가 (시너지 가이드)
+- 마스터 README에 시나리오별 plugin 조합 매트릭스 추가
+- 단일 SKILL.md plugin 3개에 README 추가 (ue5-coding-convention, gpu-fluid-sim, hdk-reference)
+- 레거시 `.skill` ZIP 패키지 제거 (이미 plugin으로 변환됨)
 
-이 파일들은 압축 해제되어 위의 plugin 디렉토리로 이전됨. 향후 안정성 확인 후 삭제 가능.
+### v1.0.0 (2026-04-30)
+- 6개 plugin 표준 marketplace 구조로 변환
+- `unreal-dev-kb` 신규 추가 (UE5 cvar/매크로 카탈로그 약 2,000+ 항목)
+- 기존 `.skill` 5개를 plugin 디렉토리로 압축 해제
 
 ## 다른 PC 셋업 가이드
 

@@ -1,6 +1,6 @@
 ---
 name: hdk-reference
-description: Houdini HDK (Houdini Development Kit) C++ reference for Houdini 21.0. Use when writing, reviewing, or generating HDK C++ code. Covers DSO entry points, SOP/DM/GUI/SIM/RAY/VEX/COP2/CHOP node patterns, custom primitive pipeline (GEO→GT→GR), viewport render hooks, packed primitives, Mantra procedurals, simulation solvers, VEX custom functions, core API patterns (GA_Handle, RE_Geometry, PRM_Template, Data ID management), and debugging (gdb, valgrind, UT_ASSERT, HOUDINI_DSO_ERROR, crash recovery). Triggers on any Houdini HDK, SOP plugin, viewport hook, custom primitive, HDK debugging, or Houdini C++ code generation request.
+description: Houdini 21.0 HDK (Houdini Development Kit) C++ 레퍼런스. DSO entry points, SOP/DM/GUI/SIM/RAY/VEX/COP2/CHOP 노드 패턴, custom primitive 파이프라인(GEO→GT→GR), viewport render hooks, packed primitives, Mantra procedurals, simulation solvers, VEX 함수, core API(GA_Handle/RE_Geometry/PRM_Template/Data ID). 트리거: "Houdini HDK", "SOP plugin", "VEX custom function", "DSO 작성", "custom primitive", "viewport hook", "HDK 디버깅". 다루지 않음: UE5 (별개 영역, → unreal-dev-kb / ue5-shaders).
 ---
 
 # Houdini 21.0 HDK Reference
@@ -1216,3 +1216,15 @@ bool cudaMyKernel(float* data, int count, float param) {
     cudaMalloc(...); cudaMemcpy(...); my_kernel<<<>>>(...); cudaMemcpy(...); cudaFree(...);
 }
 ```
+
+---
+
+## 함께 활성화되면 좋은 plugin
+
+본 plugin은 **Houdini HDK C++**에 특화. UE5 plugin들과는 영역이 다르므로 직접 협력은 적음. 단:
+
+| 시나리오 | 협력 plugin | 본 plugin 역할 | 협력 plugin 역할 |
+|---|---|---|---|
+| Houdini Pyro/Gas DOP에 fluid 구현 | `gpu-fluid-sim` | HDK API/패턴 | Eulerian fluid 알고리즘 |
+
+**참고**: UE5 작업과 Houdini HDK 작업은 별개 컨텍스트. UE5 관련 plugin (`unreal-dev-kb`, `ue5-rdg`, `ue5-shaders`)과는 함께 트리거되지 않도록 description 조정됨.

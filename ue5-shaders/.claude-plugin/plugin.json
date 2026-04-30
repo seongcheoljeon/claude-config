@@ -1,7 +1,7 @@
 {
   "name": "ue5-shaders",
-  "description": "Unreal Engine 5 HLSL shader tree (Engine/Shaders) reference for UE 5.7.4+. Material translator slots, Vertex Factory contract, BasePass/ShadowDepth/Velocity passes, legacy ShadingModels (BRDF, GBuffer encoding), Substrate closure-tree BSDF, Lumen GI/Reflections, Nanite, VSM, TSR, Ray/Path Tracing, Sky Atmosphere, Volumetric Cloud, Translucency/OIT/Decals/MegaLights/SSRT/HairStrands, post-process, Mobile path, GPU Scene/Instance Culling, MaterialCache, Distance Field",
-  "version": "1.0.0",
+  "description": "UE 5.7.4+ Engine/Shaders HLSL 트리(.usf/.ush) 라우터. Material translator, Vertex Factory, BasePass/ShadowDepth/Velocity, Substrate BSDF, Lumen/Nanite/VSM/TSR HLSL 흐름, Ray/Path Tracing, Sky Atmosphere, Translucency, Post-process. 협력: unreal-dev-kb(cvar), ue5-rdg(C++ API)",
+  "version": "1.1.0",
   "author": {
     "name": "Seongcheol Jeon",
     "email": "seongcheoljeon@mistilgames.com"

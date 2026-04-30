@@ -1,6 +1,6 @@
 ---
 name: unreal-dev-kb
-description: UnrealEngine 셰이더/렌더링/머티리얼/이펙트/디버깅 작업 시 사용하는 지식 베이스. 약 2,000+ cvar/매크로/명령 카탈로그를 9개 영역(RDG, Shader Compiler, Material, Niagara, GPU 디버깅, Lumen/Nanite/RT/VSM, Profiling, Visualization, HLSL Custom Node)으로 정리. 사용자가 "셰이더", "머티리얼", "RDG", "Lumen", "Nanite", "Niagara", "RenderDoc", "PIX", "GPU 디버깅", "stat gpu", "ProfileGPU", "ShowFlag", "ViewMode", "Custom Node", "MaterialTemplate", "TangentToWorld", "RotateAboutAxis", "ConsoleVariables", "r.RDG", "r.Lumen", "r.Nanite", "fx.Niagara" 등 키워드로 질문하거나, UE 셰이더/렌더링 관련 cvar 추천을 요청할 때 자동으로 활성화. 시나리오별 cvar 셋 추천 + 정확한 cvar 이름/기본값/플래그 제공 가능.
+description: UE5 셰이더/렌더링/머티리얼/이펙트/디버깅 영역 cvar/매크로/콘솔명령 약 2,000+ 카탈로그 (9개 영역 — RDG, Shader Compiler, Material, Niagara, GPU 디버깅, Lumen/Nanite/RT/VSM, Profiling, Visualization, HLSL Custom Node). 트리거: r.RDG, r.Lumen, r.Nanite, fx.Niagara, "stat gpu", ProfileGPU, ShowFlag, ViewMode, "셰이더 cvar 추천", "GPU 디버깅 cvar". 다루지 않음: HLSL 셰이더 코드 자체 (→ ue5-shaders), RDG C++ API 작성 패턴 (→ ue5-rdg).
 license: MIT
 ---
 
@@ -99,3 +99,16 @@ struct _Helper { float3 N(float3x3 TBN) { return TBN[2]; } };
 ## 갱신
 
 엔진 업그레이드 시 (5.7 → 5.8 등) cvar 추가/제거 가능. 새 cvar 발견 시 해당 노트 업데이트 필요. INDEX.md의 통계도 갱신.
+
+## 함께 활성화되면 좋은 plugin
+
+본 plugin은 **cvar/매크로 카탈로그**에 특화. 다음 plugin과 동시 활성화 시 시너지:
+
+| 시나리오 | 협력 plugin | 본 plugin 역할 | 협력 plugin 역할 |
+|---|---|---|---|
+| RDG 패스 작성 + 디버깅 | `ue5-rdg` | 디버그용 cvar (`r.RDG.*`) | C++ API 작성 패턴 |
+| 엔진 셰이더 분석 | `ue5-shaders` | 컴파일러/시각화 cvar | HLSL 코드 자체 |
+| Niagara/Fluid 이펙트 | `gpu-fluid-sim` | `fx.Niagara.*` cvar | 알고리즘 가이드 |
+| UE5 신규 시스템 작성 | `ue5-coding-convention` | 디버깅용 cvar | C++ 코딩 스타일 |
+
+**검색 흐름 권장**: 코드 작성 시 `ue5-rdg`/`ue5-shaders` 먼저 → 디버깅 시 본 plugin → 콘솔 명령 적용.

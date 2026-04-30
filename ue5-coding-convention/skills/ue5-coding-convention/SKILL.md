@@ -1,6 +1,6 @@
 ---
 name: ue5-coding-convention
-description: Unreal Engine 5 C++ coding convention for any UE5 project. Use when writing, reviewing, or generating UE5 C++ code. Applies to class naming (project prefix), member variables (_ prefix), assertions (check/checkf/ensure), type declarations (int32/uint8), code formatting (braces, switch), enum patterns, RPC naming, and data validation. Triggers on any UE5 C++ code generation or review request.
+description: UE5 C++ 코딩 컨벤션 — 클래스 명명(프로젝트 prefix), 멤버 변수(_ prefix), 어설션(check/checkf/ensure), 타입(int32/uint8/bool), 코드 포맷(braces/switch), enum 패턴, RPC 명명, 데이터 검증(IsDataValid). 트리거: "UE5 C++ 작성/리뷰", "UE5 클래스 네이밍", "check 매크로", "UPROPERTY/UFUNCTION 명명", "RPC SERVER_/CLIENT_". 다루지 않음: 셰이더 (→ ue5-shaders), 렌더링 cvar (→ unreal-dev-kb).
 ---
 
 # UE5 C++ Coding Convention
@@ -394,3 +394,16 @@ EDataValidationResult UXxExample::IsDataValid(FDataValidationContext& Context) c
 ```
 
 크래시 이슈가 아니면 바로 리턴하지 않고 모든 검사 수행 (패키징 시 모든 오류 확인 위함).
+
+---
+
+## 함께 활성화되면 좋은 plugin
+
+본 plugin은 **UE5 C++ 코딩 스타일**에 특화. 다음 plugin과 동시 활성화 시 시너지:
+
+| 시나리오 | 협력 plugin | 본 plugin 역할 | 협력 plugin 역할 |
+|---|---|---|---|
+| RDG 렌더 패스 작성 | `ue5-rdg` | 명명/포맷 규칙 적용 | RDG C++ API 패턴 |
+| UE5 일반 작업 (런타임 cvar 함께) | `unreal-dev-kb` | 코딩 규칙 | 디버깅용 cvar/명령 |
+
+**검색 흐름 권장**: 코드 작성 시 본 plugin의 명명 규칙 + `ue5-rdg`/엔진 패턴 결합.

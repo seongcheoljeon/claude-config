@@ -6,62 +6,62 @@
     "email": "seongcheoljeon@mistilgames.com"
   },
   "metadata": {
-    "description": "UE5/Houdini/HDK 셰이더·렌더링·시뮬레이션 작업용 Claude Code 플러그인 모음",
-    "version": "1.0.0"
+    "description": "UE5/Houdini/HDK 셰이더·렌더링·시뮬레이션 작업용 Claude Code 플러그인 모음 (6개)",
+    "version": "1.1.0"
   },
   "plugins": [
     {
       "name": "unreal-dev-kb",
       "source": "./unreal-dev-kb",
-      "description": "UnrealEngine 셰이더/렌더링/머티리얼/이펙트/디버깅 cvar/매크로/명령 카탈로그 약 2,000+ 항목 (RDG, Shader Compiler, Material, Niagara, GPU 디버깅, Lumen/Nanite/RT/VSM, Profiling, Visualization, HLSL Custom Node)",
-      "version": "1.0.0",
+      "description": "UE5 셰이더/렌더링/머티리얼/이펙트/디버깅 cvar/매크로/콘솔명령 약 2,000+ 카탈로그 (9개 영역). 협력: ue5-rdg(C++ API), ue5-shaders(HLSL 코드)",
+      "version": "1.1.0",
       "author": { "name": "Seongcheol Jeon" },
-      "keywords": ["unreal", "ue5", "shader", "rendering", "rdg", "lumen", "nanite", "niagara", "hlsl", "renderdoc", "cvar", "catalog"],
+      "keywords": ["unreal", "ue5", "shader", "rendering", "rdg", "lumen", "nanite", "niagara", "hlsl", "renderdoc", "cvar", "catalog", "console-variable"],
       "category": "reference"
     },
     {
       "name": "ue5-rdg",
       "source": "./ue5-rdg",
-      "description": "UE5 Render Dependency Graph 전문 레퍼런스 — FRDGBuilder 패턴, AddPass, Shader Parameter 바인딩, Resource 관리, Pass Culling, Transient Resource, RDG 디버깅",
-      "version": "1.0.0",
+      "description": "UE5 RDG C++ API 작성 패턴. FRDGBuilder/AddPass, Compute/Raster/Copy Pass, Scene View Extension, Resource 생명주기. 협력: unreal-dev-kb(cvar), ue5-shaders(HLSL)",
+      "version": "1.1.0",
       "author": { "name": "Seongcheol Jeon" },
-      "keywords": ["ue5", "rdg", "render-graph", "FRDGBuilder", "compute-pass", "shader-parameter", "rendering"],
+      "keywords": ["ue5", "rdg", "render-graph", "FRDGBuilder", "AddPass", "compute-pass", "raster-pass", "scene-view-extension", "rendering"],
       "category": "reference"
     },
     {
       "name": "ue5-shaders",
       "source": "./ue5-shaders",
-      "description": "UE 5.7.4+ Engine/Shaders HLSL 트리 레퍼런스 — Material translator, Vertex Factory, BasePass/ShadowDepth/Velocity, Substrate BSDF, Lumen, Nanite, VSM, TSR, Ray/Path Tracing, Mobile, GPU Scene",
-      "version": "1.0.0",
+      "description": "UE 5.7.4+ Engine/Shaders HLSL 트리 라우터. Material translator, Vertex Factory, BasePass, Substrate BSDF, Lumen/Nanite/VSM/TSR HLSL 흐름. 협력: unreal-dev-kb(cvar), ue5-rdg(C++ API)",
+      "version": "1.1.0",
       "author": { "name": "Seongcheol Jeon" },
-      "keywords": ["ue5", "shader", "hlsl", "usf", "ush", "material", "lumen", "nanite", "vsm", "tsr", "ray-tracing", "substrate"],
+      "keywords": ["ue5", "shader", "hlsl", "usf", "ush", "material", "lumen", "nanite", "vsm", "tsr", "ray-tracing", "substrate", "basepass", "vertex-factory"],
       "category": "reference"
     },
     {
       "name": "ue5-coding-convention",
       "source": "./ue5-coding-convention",
-      "description": "UE5 C++ 코딩 컨벤션 — 클래스 명명(프로젝트 prefix), 멤버 변수(_ prefix), 어설션(check/checkf/ensure), 타입(int32/uint8), 코드 포맷, enum 패턴, RPC 명명, 데이터 검증",
-      "version": "1.0.0",
+      "description": "UE5 C++ 코딩 컨벤션 — 명명, 어설션(check/ensure), 타입(int32/uint8), 포맷, enum, RPC, 데이터 검증. 협력: ue5-rdg(렌더 코드), unreal-dev-kb(런타임 cvar)",
+      "version": "1.1.0",
       "author": { "name": "Seongcheol Jeon" },
-      "keywords": ["ue5", "cpp", "coding-convention", "naming", "code-style", "best-practice"],
+      "keywords": ["ue5", "cpp", "coding-convention", "naming", "code-style", "best-practice", "check-macro", "uproperty"],
       "category": "workflow"
     },
     {
       "name": "gpu-fluid-sim",
       "source": "./gpu-fluid-sim",
-      "description": "GPU Eulerian Fluid Simulation (Stable Fluids, Navier-Stokes) — UE5 Compute Shader / Niagara Grid, Houdini Gas OpenCL / Pyro 적용. semi-Lagrangian advection, MacCormack, BFECC, Jacobi pressure solve, vorticity confinement",
-      "version": "1.0.0",
+      "description": "GPU Eulerian Fluid Simulation (Stable Fluids/Navier-Stokes) 알고리즘. UE5 Compute Shader/Niagara Grid, Houdini Gas OpenCL/Pyro 적용. 협력: ue5-rdg(UE 구현), hdk-reference(Houdini), unreal-dev-kb(Niagara cvar)",
+      "version": "1.1.0",
       "author": { "name": "Seongcheol Jeon" },
-      "keywords": ["fluid-simulation", "stable-fluids", "navier-stokes", "compute-shader", "niagara", "houdini", "smoke", "fire", "pyro"],
+      "keywords": ["fluid-simulation", "stable-fluids", "navier-stokes", "compute-shader", "niagara", "houdini", "smoke", "fire", "pyro", "maccormack", "bfecc", "vorticity"],
       "category": "reference"
     },
     {
       "name": "hdk-reference",
       "source": "./hdk-reference",
-      "description": "Houdini 21.0 HDK (Houdini Development Kit) C++ 레퍼런스 — DSO entry points, SOP/DM/GUI/SIM/RAY/VEX/COP2/CHOP 노드 패턴, custom primitive 파이프라인, viewport render hooks, packed primitives, Mantra procedurals",
-      "version": "1.0.0",
+      "description": "Houdini 21.0 HDK C++ 레퍼런스. DSO entry points, SOP/DM/GUI/SIM/RAY/VEX/COP2/CHOP 패턴, custom primitive, viewport hooks, Mantra procedurals. 협력: gpu-fluid-sim(Pyro/Gas)",
+      "version": "1.1.0",
       "author": { "name": "Seongcheol Jeon" },
-      "keywords": ["houdini", "hdk", "houdini-development-kit", "sop", "vex", "dso", "custom-primitive", "viewport-hook"],
+      "keywords": ["houdini", "hdk", "houdini-development-kit", "houdini-21", "sop", "vex", "dso", "custom-primitive", "viewport-hook"],
       "category": "reference"
     }
   ]

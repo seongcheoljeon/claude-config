@@ -1,7 +1,7 @@
 {
   "name": "ue5-coding-convention",
-  "description": "Unreal Engine 5 C++ coding convention. 클래스 명명(프로젝트 prefix), 멤버 변수(_ prefix), 어설션(check/checkf/ensure), 타입 선언(int32/uint8), 코드 포맷(braces, switch), enum 패턴, RPC 명명, 데이터 검증",
-  "version": "1.0.0",
+  "description": "UE5 C++ 코딩 컨벤션 — 명명(prefix), 어설션(check/ensure), 타입(int32/uint8), 포맷(braces/switch), enum, RPC, 데이터 검증. 협력: ue5-rdg(렌더 코드), unreal-dev-kb(런타임 cvar)",
+  "version": "1.1.0",
   "author": {
     "name": "Seongcheol Jeon",
     "email": "seongcheoljeon@mistilgames.com"

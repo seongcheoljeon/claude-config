@@ -1,7 +1,7 @@
 {
   "name": "hdk-reference",
-  "description": "Houdini HDK (Houdini Development Kit) C++ reference for Houdini 21.0. DSO entry points, SOP/DM/GUI/SIM/RAY/VEX/COP2/CHOP node patterns, custom primitive pipeline, viewport render hooks, packed primitives, Mantra procedurals, simulation solvers",
-  "version": "1.0.0",
+  "description": "Houdini 21.0 HDK C++ 레퍼런스. DSO entry points, SOP/DM/GUI/SIM/RAY/VEX/COP2/CHOP 패턴, custom primitive, viewport hooks, packed primitives, Mantra procedurals. 협력: gpu-fluid-sim(Pyro/Gas 구현)",
+  "version": "1.1.0",
   "author": {
     "name": "Seongcheol Jeon",
     "email": "seongcheoljeon@mistilgames.com"
