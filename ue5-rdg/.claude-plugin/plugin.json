@@ -1,0 +1,34 @@
+{
+  "name": "ue5-rdg",
+  "description": "Unreal Engine 5 Render Dependency Graph (RDG) 전문 레퍼런스. UE5 RDG API, GraphBuilder 패턴, Shader Parameter 바인딩, Resource 관리, Compute/Raster/Copy Pass 작성, Scene View Extension 연동, Pass Culling, Transient Resource, UAV/SRV/RTV 바인딩, RDG 디버깅",
+  "version": "1.0.0",
+  "author": {
+    "name": "Seongcheol Jeon",
+    "email": "seongcheoljeon@mistilgames.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ue5",
+    "unreal",
+    "rdg",
+    "render-graph",
+    "render-dependency-graph",
+    "FRDGBuilder",
+    "AddPass",
+    "FRDGTexture",
+    "FRDGBuffer",
+    "compute-pass",
+    "raster-pass",
+    "copy-pass",
+    "shader-parameter",
+    "scene-view-extension",
+    "pass-culling",
+    "transient-resource",
+    "uav",
+    "srv",
+    "rtv",
+    "rdg-debugging",
+    "thread-safety"
+  ],
+  "skills": ["./skills/ue5-rdg"]
+}

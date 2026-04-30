@@ -1,0 +1,27 @@
+{
+  "name": "ue5-coding-convention",
+  "description": "Unreal Engine 5 C++ coding convention. 클래스 명명(프로젝트 prefix), 멤버 변수(_ prefix), 어설션(check/checkf/ensure), 타입 선언(int32/uint8), 코드 포맷(braces, switch), enum 패턴, RPC 명명, 데이터 검증",
+  "version": "1.0.0",
+  "author": {
+    "name": "Seongcheol Jeon",
+    "email": "seongcheoljeon@mistilgames.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ue5",
+    "unreal",
+    "cpp",
+    "c++",
+    "coding-convention",
+    "naming",
+    "code-style",
+    "best-practice",
+    "check",
+    "checkf",
+    "ensure",
+    "uproperty",
+    "ufunction",
+    "ulog"
+  ],
+  "skills": ["./skills/ue5-coding-convention"]
+}
