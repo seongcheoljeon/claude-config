@@ -1,8 +1,8 @@
 # ClaudeSkills
 
-> Marketplace ID: `claude-skills-jsc` · Version: 1.1.0
+> Marketplace ID: `claude-skills-jsc` · Version: 1.2.0
 
-Seongcheol Jeon의 Claude Code 플러그인 마켓플레이스. UE5 / Houdini / HDK / GPU 시뮬레이션 작업용 6개 플러그인.
+Seongcheol Jeon의 Claude Code 플러그인 마켓플레이스. UE5 / Houdini / HDK / GPU 시뮬레이션 / GPU Gems 알고리즘 작업용 7개 플러그인.
 
 ## 플러그인 목록
 
@@ -14,6 +14,7 @@ Seongcheol Jeon의 Claude Code 플러그인 마켓플레이스. UE5 / Houdini / 
 | [ue5-coding-convention](ue5-coding-convention/) | UE5 C++ 코딩 컨벤션 | workflow |
 | [gpu-fluid-sim](gpu-fluid-sim/) | GPU Eulerian Fluid Simulation 가이드 (UE5/Houdini) | reference |
 | [hdk-reference](hdk-reference/) | Houdini 21.0 HDK C++ 레퍼런스 | reference |
+| [gpu-gems-1](gpu-gems-1/) | GPU Gems 1 (NVIDIA, 2004) 42개 챕터 알고리즘 라우터 | reference |
 
 ## 설치 방법
 
@@ -31,6 +32,7 @@ claude plugin install ue5-shaders@claude-skills-jsc
 claude plugin install ue5-coding-convention@claude-skills-jsc
 claude plugin install gpu-fluid-sim@claude-skills-jsc
 claude plugin install hdk-reference@claude-skills-jsc
+claude plugin install gpu-gems-1@claude-skills-jsc
 
 # 모두 활성화
 /reload-plugins
@@ -53,7 +55,7 @@ claude plugin marketplace add ~/source/repos/ClaudeSkills
 ```text
 ClaudeSkills/
 ├── .claude-plugin/
-│   └── marketplace.json              ← 6개 플러그인 등록
+│   └── marketplace.json              ← 7개 플러그인 등록
 ├── unreal-dev-kb/                    ← 플러그인
 │   ├── .claude-plugin/plugin.json
 │   ├── skills/unreal-dev-kb/
@@ -83,6 +85,12 @@ ClaudeSkills/
 ├── hdk-reference/
 │   ├── .claude-plugin/plugin.json
 │   └── skills/hdk-reference/SKILL.md
+├── gpu-gems-1/
+│   ├── .claude-plugin/plugin.json
+│   ├── skills/gpu-gems-1/
+│   │   ├── SKILL.md                  ← 42챕터 → 11그룹 라우팅 테이블
+│   │   └── chapters/                 ← ch01~ch42.md 한글 학습 노트
+│   └── README.md
 └── README.md
 ```
 
@@ -98,6 +106,7 @@ ClaudeSkills/
 | ue5-coding-convention | "UE5 C++ 작성", "check 매크로", "UPROPERTY 명명" |
 | gpu-fluid-sim | "Navier-Stokes", "Stable Fluids", "Pyro", "Gas OpenCL", "smoke simulation" |
 | hdk-reference | "Houdini HDK", "SOP plugin", "VEX", "DSO" |
+| gpu-gems-1 | "Gerstner wave", "Perlin noise", "subsurface scattering", "PCF", "PSM", "depth of field", "image-based lighting", "shadow volume", "texture bombing", "OpenEXR" |
 
 ## 플러그인 간 영역 관계
 
@@ -109,8 +118,9 @@ ClaudeSkills/
 | **셰이더** | `unreal-dev-kb` + `ue5-shaders` | 컴파일러 cvar vs HLSL 코드 자체 |
 | **머티리얼** | `unreal-dev-kb` + `ue5-shaders` | Custom Node 헬퍼 vs 엔진 Material translator |
 | **코딩 스타일** | `ue5-coding-convention` | 단독 영역 |
-| **GPU 시뮬** | `gpu-fluid-sim` | 단독 영역 (UE/Houdini 양쪽 적용) |
+| **GPU 시뮬** | `gpu-fluid-sim` + `gpu-gems-1` | 현대 알고리즘(Stable Fluids 등) vs 2004년 GPU Gems 원문 |
 | **Houdini** | `hdk-reference` | 단독 영역 |
+| **그래픽스 알고리즘** | `gpu-gems-1` | GPU Gems 1 원문 알고리즘 (UE5 적용은 ue5-shaders로 라우팅) |
 
 ## 시나리오별 plugin 조합 매트릭스
 
@@ -131,6 +141,10 @@ ClaudeSkills/
 | Houdini SOP plugin | `hdk-reference` | "newSopOperator 진입점 + Data ID 관리" |
 | Houdini Pyro/Gas | `hdk-reference` + `gpu-fluid-sim` | "Gas OpenCL DOP에서 Stable Fluids 구현" |
 | GPU Fluid Sim (UE5) | `gpu-fluid-sim` + `ue5-rdg` (+ `unreal-dev-kb`) | "Niagara Grid2D로 Pyro 포팅 + Compute Pass + 셰이더 cvar" |
+| SSS/AO/IBL 구현 | `gpu-gems-1` + `ue5-shaders` | "GPU Gems ch16 SSS 알고리즘 + UE5 Substrate 매핑" |
+| 물/연기/불 알고리즘 학습 | `gpu-gems-1` + `gpu-fluid-sim` | "Gerstner wave 원문 + Niagara 적용", "Stable Fluids ch38 + UE5 구현" |
+| 섀도우 기법 비교 | `gpu-gems-1` + `unreal-dev-kb` | "PCF/PSM/SoftShadow 알고리즘 + UE5 ShadowMap cvar" |
+| 포스트프로세스 알고리즘 | `gpu-gems-1` + `ue5-shaders` | "DoF/Glow 원문 + UE5 PostProcess HLSL" |
 
 → 자동 트리거가 정확하지 않으면 명시적 호출: `/<plugin-name>` 또는 "<plugin-name> 사용해서 ..."
 
@@ -185,6 +199,11 @@ cd /mnt/c/Users/admin/source/repos/ClaudeSkills
 5. 다른 PC에서: `git pull` + `claude plugin update <plugin-name>`
 
 ## 변경 이력
+
+### v1.2.0 (2026-05-04)
+- `gpu-gems-1` 신규 추가 — GPU Gems 1 (NVIDIA, 2004) 42개 챕터 한글 학습 노트 + 라우팅 테이블 (11 그룹)
+- README 시나리오 매트릭스에 GPU Gems 알고리즘 시나리오 4개 추가 (SSS/AO/IBL, 물/연기/불, 섀도우 비교, 포스트프로세스)
+- marketplace metadata: 6개 → 7개
 
 ### v1.1.0 (2026-04-30)
 - SKILL.md description 압축 (트리거 정확도 ↑) — 6개 plugin

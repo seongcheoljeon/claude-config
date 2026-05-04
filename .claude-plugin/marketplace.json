@@ -6,8 +6,8 @@
     "email": "seongcheoljeon@mistilgames.com"
   },
   "metadata": {
-    "description": "UE5/Houdini/HDK 셰이더·렌더링·시뮬레이션 작업용 Claude Code 플러그인 모음 (6개)",
-    "version": "1.1.0"
+    "description": "UE5/Houdini/HDK/GPU Gems 셰이더·렌더링·시뮬레이션·알고리즘 작업용 Claude Code 플러그인 모음 (7개)",
+    "version": "1.2.0"
   },
   "plugins": [
     {
@@ -62,6 +62,15 @@
       "version": "1.1.0",
       "author": { "name": "Seongcheol Jeon" },
       "keywords": ["houdini", "hdk", "houdini-development-kit", "houdini-21", "sop", "vex", "dso", "custom-primitive", "viewport-hook"],
+      "category": "reference"
+    },
+    {
+      "name": "gpu-gems-1",
+      "source": "./gpu-gems-1",
+      "description": "GPU Gems 1 (NVIDIA, 2004) 42개 챕터 알고리즘 레퍼런스 라우터. 워터/노이즈/섀도우/라이팅/포스트프로세스/시뮬레이션/GPGPU. 협력: gpu-fluid-sim(Stable Fluids), ue5-shaders(HLSL 이식), unreal-dev-kb(cvar)",
+      "version": "1.0.0",
+      "author": { "name": "Seongcheol Jeon" },
+      "keywords": ["gpu-gems", "nvidia", "real-time-rendering", "gerstner-wave", "perlin-noise", "voronoi", "shadow-volume", "pcf", "psm", "subsurface-scattering", "ambient-occlusion", "image-based-lighting", "brdf", "depth-of-field", "bloom", "openexr", "stable-fluids", "volume-rendering", "gpgpu"],
       "category": "reference"
     }
   ]
