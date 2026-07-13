@@ -1,0 +1,40 @@
+{
+  "model": "opus[1m]",
+  "hooks": {},
+  "statusLine": {
+    "type": "command",
+    "command": "__STATUSLINE_CMD__"
+  },
+  "enabledPlugins": {
+    "context-mode@context-mode": true,
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "claude-dashboard@claude-dashboard": true
+  },
+  "extraKnownMarketplaces": {
+    "context-mode": {
+      "source": {
+        "source": "github",
+        "repo": "mksglu/context-mode"
+      }
+    },
+    "karpathy-skills": {
+      "source": {
+        "source": "github",
+        "repo": "forrestchang/andrej-karpathy-skills"
+      }
+    },
+    "claude-dashboard": {
+      "source": {
+        "source": "github",
+        "repo": "uppinote20/claude-dashboard"
+      }
+    }
+  },
+  "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "theme": "dark",
+  "voiceEnabled": true
+}
