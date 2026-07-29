@@ -13,14 +13,15 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "__STATUSLINE_CMD__"
+    "command": "node \"__CLAUDE_DIR__/hooks/dashboard-statusline.mjs\""
   },
   "enabledPlugins": {
     "context-mode@context-mode": true,
     "andrej-karpathy-skills@karpathy-skills": true,
     "claude-dashboard@claude-dashboard": true,
     "ponytail@ponytail": true,
-    "swift-lsp@claude-plugins-official": true
+    "swift-lsp@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "context-mode": {

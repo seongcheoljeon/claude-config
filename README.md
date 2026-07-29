@@ -28,13 +28,75 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 
 ## 실행하면 되는 일
 
-1. 마켓플레이스 등록 + 플러그인 4개 설치 (context-mode, andrej-karpathy-skills, claude-dashboard, ponytail)
-2. `~/.claude/settings.json` · `settings.local.json` 배치 (statusLine 경로 자동 탐색)
-3. `~/.claude/hooks/` 배치 — SessionStart 훅 (context-mode 플러그인 캐시 자가복구)
+1. 마켓플레이스 등록 + 플러그인 6개 설치 (context-mode, andrej-karpathy-skills, claude-dashboard, ponytail, swift-lsp, clangd-lsp)
+2. `~/.claude/settings.json` · `settings.local.json` 배치
+3. `~/.claude/hooks/` 배치 — 훅 2개
+   - `context-mode-cache-heal.mjs` (SessionStart) — context-mode 플러그인 캐시 자가복구
+   - `dashboard-statusline.mjs` (statusLine) — 대시보드 최신 버전을 **매 호출마다** 해석
 4. `~/.claude/CLAUDE.md` 배치 — **어느 폴더에서 실행하든 항상 적용되는 전역 지침**
-5. 메모리/지침을 `~/.claude/projects/<home>/memory/` 에 배치 (HOME에서 실행 시 로드 + 자가 갱신)
+5. 메모리를 **`data/memory` 로 symlink**(Windows: junction) — HOME 과 이 repo 폴더 두 곳
+   - 메모리는 프로젝트 스코프라 폴더마다 경로가 다름. 두 곳 다 링크해야 설정 작업을
+     어디서 하든 기존 메모리가 로드되고, 새 메모리가 git 안에 쌓인다.
+   - 링크이므로 **이 repo 를 삭제/이동하면 안 됨.** 동기화는 `git pull/push` 가 전부 처리.
 
-기존 `settings*.json` / `CLAUDE.md` 는 `*.bak.<타임스탬프>` 로 자동 백업됨.
+6. 스킬을 `~/.claude/skills/<이름>` → `data/skills/<이름>` 으로 symlink(Windows: junction)
+
+기존 `settings*.json` / `CLAUDE.md` / `memory` / `skills` 는 `*.bak.<타임스탬프>` 로 자동
+백업되고, 원본별 **최신 3개만** 유지된다(재실행마다 누적되는 것을 방지).
+
+## 무엇이 어디까지 적용되는가
+
+| 항목 | 범위 | 로드 시점 |
+|---|---|---|
+| `CLAUDE.md` 전역 지침 | **모든 폴더** | 매 세션 항상 |
+| 플러그인 6개 (user scope) | **모든 폴더** | 매 세션 |
+| statusLine · SessionStart 훅 · 권한 · theme/voice | **모든 폴더** | 매 세션 |
+| `skills/` | **모든 폴더** | description 이 맞을 때만 |
+| `memory/` | **HOME + 이 repo 뿐** | 해당 폴더 세션에서만 |
+
+메모리는 Claude Code 설계상 **프로젝트 스코프**다(`projects/<경로치환>/memory/`). 폴더마다
+독립적인 게 정상 동작이라 전 폴더 공용화는 하지 않는다 — 프로젝트별 진행상황이 섞이면
+오히려 해롭다. 그래서 성격에 따라 자리를 나눈다:
+
+- **항상 적용돼야 하는 지시** → `data/CLAUDE.md`
+- **전역이지만 필요할 때만 볼 도메인 지식** → `data/skills/<이름>/SKILL.md`
+- **그 폴더에서만 유효한 진행상황** → 해당 프로젝트의 memory (그대로 둠)
+
+## clangd-lsp — C/C++ 은 `compile_commands.json` 이 있어야 의미가 있다
+
+clangd 는 컴파일 DB에서 include 경로·매크로·`-std` 를 받는다. DB가 없으면 UE 코드는
+`*.generated.h` 를 못 찾고 UHT 매크로가 미해석되어 **가짜 진단만 쏟아진다.**
+
+### UE 프로젝트 (검증: UE 5.8.1 런처 설치 + Apple clangd 21, macOS arm64)
+
+```bash
+"/Users/Shared/Epic Games/UE_5.8/Engine/Build/BatchFiles/RunUBT.sh" \
+  -mode=GenerateClangDatabase \
+  -OutputDir="$HOME/Documents/Unreal Projects/<Proj>" \
+  -project="$HOME/Documents/Unreal Projects/<Proj>/<Proj>.uproject" \
+  <Proj>Editor Mac Development
+```
+- `-OutputDir=` 를 빼면 **엔진 루트**(`/Users/Shared/Epic Games/UE_5.8/`)에 생성된다.
+  clangd 는 소스 파일의 상위 디렉토리에서만 DB를 찾으므로, 프로젝트 코드에 적용하려면
+  프로젝트 루트로 출력해야 한다. (`-OutputDir` 은 `-help` 에 안 나오지만 UBT가 받는다)
+- 엔진 소스를 열어볼 목적이라면 엔진 루트 쪽 DB도 그대로 두면 된다.
+- 헤더/소스가 늘거나 모듈 의존성이 바뀌면 **다시 돌려야** 한다.
+- UBT 명령의 엔트리는 `@...rsp` 응답 파일을 참조하는데, clangd 가 이를 펼쳐서 읽는다
+  (검증: `clangd --check` 로그에 확장된 플래그가 찍히고 `All checks completed, 0 errors`).
+- 생성된 `compile_commands.json` 은 빌드 산출물이므로 `.gitignore` 대상.
+
+### CMake 프로젝트
+
+```bash
+cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+ln -sf build/compile_commands.json .
+```
+
+### 동작 확인
+
+```bash
+clangd --check=<파일.cpp> 2>&1 | tail -3     # "All checks completed, N errors"
+```
 
 ## MCP 서버 (설치 스크립트 대상 아님 — 기록용)
 
@@ -58,4 +120,9 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 
 ## 참고
 
-- statusLine 경로가 자동 탐색되지 않으면, Claude Code에서 `/claude-dashboard:update` 한 번 실행.
+- **statusLine 은 플러그인 버전에 묶여 있지 않다.** `settings.json` 에 캐시 경로를
+  박으면(`.../claude-dashboard/1.30.1/dist/index.js`) 플러그인 업데이트로 버전 폴더가
+  교체되는 순간 상태줄이 조용히 죽는다. 그래서 래퍼(`hooks/dashboard-statusline.mjs`)가
+  실행 시점에 최신 버전을 찾아 위임한다 — `claude plugin update` 후 아무 작업도 필요 없음.
+- 래퍼 동작 확인: `./test-statusline.sh`
+- 플러그인 업데이트 확인: `claude plugin marketplace update` → `claude plugin list`

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code 설정 이식 스크립트 (macOS / Linux)
-# - 플러그인 4개 재설치, settings 복사, statusLine 경로 자동 탐색, 훅/메모리/지침 복사
+# - 플러그인 6개 재설치, settings·훅·스킬 배치, 전역 CLAUDE.md 배치, 메모리 symlink
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -21,6 +21,14 @@ fi
 # 0-1) node 확인 (statusLine + SessionStart 훅이 의존. 없으면 조용히 실패하므로 경고)
 command -v node >/dev/null 2>&1 || echo "!! 'node' 미발견 — statusLine과 SessionStart 훅이 동작하지 않습니다. Node.js 설치 권장 (설치는 계속 진행)" >&2
 
+# 0-2) 백업은 재실행마다 누적되므로 원본별 최신 3개만 남긴다 (파일/디렉토리 공통)
+prune_baks() {                    # $1: 백업 대상 원본 경로
+  { ls -1dt "$1".bak.* 2>/dev/null || true; } | tail -n +4 | while IFS= read -r old; do
+    rm -rf "$old"
+    echo "   낡은 백업 삭제: $(basename "$old")"
+  done
+}
+
 mkdir -p "$CLAUDE_DIR"
 
 # 1) 마켓플레이스 등록 + 플러그인 설치
@@ -35,26 +43,17 @@ claude plugin install context-mode@context-mode                || true
 claude plugin install andrej-karpathy-skills@karpathy-skills   || true
 claude plugin install claude-dashboard@claude-dashboard        || true
 claude plugin install ponytail@ponytail                        || true
-# swift-lsp 은 기본 내장 마켓플레이스(claude-plugins-official) 소속 — marketplace add 불필요
+# 아래 2개는 기본 내장 마켓플레이스(claude-plugins-official) 소속 — marketplace add 불필요
 claude plugin install swift-lsp@claude-plugins-official        || true
+# clangd-lsp: C/C++ 코드 인텔리전스. compile_commands.json 이 있는 프로젝트에서만 제대로 동작
+# (UE 는 RunUBT.sh -mode=GenerateClangDatabase, CMake 는 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
+claude plugin install clangd-lsp@claude-plugins-official       || true
 
-# 2) statusLine 대시보드 index.js 경로 자동 탐색 (설치된 최신 버전)
-#    버전 폴더명을 자리수 고정으로 패딩해 정렬 — sort -V 에 의존하지 않음.
-#    (BSD sort 는 -V 미지원일 수 있고, 사전순 폴백은 1.9.0 > 1.26.1 로 오판)
-DASH_INDEX="$(
-  for f in "$CLAUDE_DIR"/plugins/cache/claude-dashboard/claude-dashboard/*/dist/index.js; do
-    [ -f "$f" ] || continue
-    v="${f%/dist/index.js}"; v="${v##*/}"
-    printf '%s\t%s\n' "$(printf '%s' "$v" | awk -F. '{printf "%05d%05d%05d", $1, $2, $3}')" "$f"
-  done | sort | tail -n1 | cut -f2-
-)"
-if [ -z "$DASH_INDEX" ]; then
-  # 미발견 시 무해한 no-op으로 폴백 (에러 방지). 이후 '/claude-dashboard:update'로 경로 갱신.
-  echo "!! claude-dashboard index.js 미발견 — statusLine을 no-op으로 설정. Claude Code에서 '/claude-dashboard:update' 실행 권장"
-  STATUSLINE_CMD="echo"
-else
-  echo "==> statusLine 경로: $DASH_INDEX"
-  STATUSLINE_CMD="node $DASH_INDEX"
+# 2) statusLine 은 hooks/dashboard-statusline.mjs 래퍼가 담당 (settings.json 에 고정)
+#    설치 시점 경로를 박지 않는다 — 플러그인이 업데이트되면 캐시 버전 폴더가
+#    교체되어 statusLine 이 조용히 죽기 때문. 래퍼가 매 호출마다 최신 버전을 해석.
+if ! compgen -G "$CLAUDE_DIR/plugins/cache/claude-dashboard/claude-dashboard/*/dist/index.js" >/dev/null; then
+  echo "!! claude-dashboard 미발견 — statusLine 은 대시보드 설치 후 자동으로 살아납니다"
 fi
 
 # 3) settings.json / settings.local.json (기존 파일 백업 후 배치)
@@ -63,10 +62,10 @@ for f in settings.json settings.local.json; do
   if [ -f "$CLAUDE_DIR/$f" ]; then
     cp "$CLAUDE_DIR/$f" "$CLAUDE_DIR/$f.bak.$TS"
     echo "==> 기존 $f 백업: $f.bak.$TS"
+    prune_baks "$CLAUDE_DIR/$f"
   fi
 done
-sed -e "s#__STATUSLINE_CMD__#${STATUSLINE_CMD}#g" \
-    -e "s#__CLAUDE_DIR__#${CLAUDE_DIR}#g" \
+sed -e "s#__CLAUDE_DIR__#${CLAUDE_DIR}#g" \
     "$DATA/settings.json" > "$CLAUDE_DIR/settings.json"
 cp "$DATA/settings.local.json" "$CLAUDE_DIR/settings.local.json"
 
@@ -78,10 +77,35 @@ if [ -d "$DATA/hooks" ]; then
   echo "==> 훅 배치: $CLAUDE_DIR/hooks"
 fi
 
+# 3-2) 스킬 — repo 의 data/skills/* 를 symlink
+#      메모리(프로젝트 스코프)와 달리 스킬은 유저 스코프라 어느 폴더에서든 쓸 수 있고,
+#      description 이 맞을 때만 로드되므로 CLAUDE.md 처럼 매 세션 컨텍스트를 먹지 않는다.
+#      → 전역이어야 하지만 항상 필요하진 않은 도메인 지식은 여기에 둔다.
+if [ -d "$DATA/skills" ]; then
+  mkdir -p "$CLAUDE_DIR/skills"
+  for s in "$DATA"/skills/*/; do
+    [ -d "$s" ] || continue
+    src="${s%/}"; dst="$CLAUDE_DIR/skills/$(basename "$src")"
+    if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+      echo "==> 스킬 symlink 이미 설정됨: $(basename "$src")"
+      continue
+    fi
+    [ -L "$dst" ] && rm -f "$dst"
+    if [ -d "$dst" ]; then
+      mv "$dst" "$dst.bak.$TS"
+      echo "==> 기존 스킬 백업: $(basename "$dst").bak.$TS"
+      prune_baks "$dst"
+    fi
+    ln -s "$src" "$dst"
+    echo "==> 스킬 symlink: $dst -> $src"
+  done
+fi
+
 # 4) 전역 지침 CLAUDE.md — 어느 폴더에서 실행하든 항상 로드됨 (기존 파일 백업)
 if [ -f "$CLAUDE_DIR/CLAUDE.md" ]; then
   cp "$CLAUDE_DIR/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md.bak.$TS"
   echo "==> 기존 CLAUDE.md 백업: CLAUDE.md.bak.$TS"
+  prune_baks "$CLAUDE_DIR/CLAUDE.md"
 fi
 cp "$DATA/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
 
@@ -90,31 +114,45 @@ cp "$DATA/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
 #    동기화는 git pull/push 가 전부 처리 (단방향 복사는 repo 가 낡고,
 #    재실행 시 로컬 메모리를 덮어써서 유실됨)
 #    → 이 repo 는 삭제/이동하면 안 됨. 설치 후에도 계속 사용되는 실 저장소.
-#    home-as-project 경로 산출 (Claude Code 규칙: 비영숫자 → '-')
-SANITIZED="$(printf '%s' "$HOME" | sed 's/[^A-Za-z0-9]/-/g')"
-MEM_DIR="$CLAUDE_DIR/projects/$SANITIZED/memory"
+#    메모리는 프로젝트 스코프이므로 폴더마다 경로가 다르다. 설정 작업을 실제로
+#    하는 두 곳(HOME, 이 repo)에 모두 링크한다 — 한쪽만 링크하면 다른 쪽 세션의
+#    메모리는 git 밖에 쌓이고 기존 메모리도 로드되지 않는다.
 MEM_SRC="$DATA/memory"
-mkdir -p "$(dirname "$MEM_DIR")"
 
-if [ -L "$MEM_DIR" ] && [ "$(readlink "$MEM_DIR")" = "$MEM_SRC" ]; then
-  echo "==> 메모리 symlink 이미 설정됨 (변경 없음)"
-else
-  if [ -L "$MEM_DIR" ]; then
-    rm -f "$MEM_DIR"                       # 다른 곳을 가리키는 링크 → 교체
-  elif [ -d "$MEM_DIR" ]; then
+link_mem() {                      # $1: 프로젝트 루트 경로
+  local sanitized mem_dir m
+  # Claude Code 규칙: 경로의 비영숫자 → '-'
+  sanitized="$(printf '%s' "$1" | sed 's/[^A-Za-z0-9]/-/g')"
+  mem_dir="$CLAUDE_DIR/projects/$sanitized/memory"
+  mkdir -p "$(dirname "$mem_dir")"
+
+  if [ -L "$mem_dir" ] && [ "$(readlink "$mem_dir")" = "$MEM_SRC" ]; then
+    echo "==> 메모리 symlink 이미 설정됨: $1"
+    return
+  fi
+  if [ -L "$mem_dir" ]; then
+    rm -f "$mem_dir"                       # 다른 곳을 가리키는 링크 → 교체
+  elif [ -d "$mem_dir" ]; then
     # 실제 디렉토리 → repo 에 없는 로컬 메모리를 먼저 회수(덮어쓰지 않음) 후 백업
-    for m in "$MEM_DIR"/*.md; do
+    for m in "$mem_dir"/*.md; do
       [ -e "$m" ] || continue
       [ -e "$MEM_SRC/$(basename "$m")" ] || { cp "$m" "$MEM_SRC"/; echo "   회수: $(basename "$m")"; }
     done
-    mv "$MEM_DIR" "$MEM_DIR.bak.$TS"
-    echo "==> 기존 메모리 백업: memory.bak.$TS"
+    # 빈 디렉토리면 백업할 것이 없다 (rmdir 은 비어있지 않으면 실패 → 백업으로 폴백)
+    rmdir "$mem_dir" 2>/dev/null || {
+      mv "$mem_dir" "$mem_dir.bak.$TS"
+      echo "==> 기존 메모리 백업: $mem_dir.bak.$TS"
+      prune_baks "$mem_dir"
+    }
   fi
-  ln -s "$MEM_SRC" "$MEM_DIR"
-  echo "==> 메모리 symlink: $MEM_DIR -> $MEM_SRC"
-fi
+  ln -s "$MEM_SRC" "$mem_dir"
+  echo "==> 메모리 symlink: $mem_dir -> $MEM_SRC"
+}
+
+link_mem "$HOME"           # 홈에서 세션을 열 때
+link_mem "$SCRIPT_DIR"     # 이 repo 폴더에서 세션을 열 때
 
 echo ""
 echo "==> 완료 ✅"
 echo "    전역 지침   : $CLAUDE_DIR/CLAUDE.md   (모든 폴더에서 항상 적용)"
-echo "    메모리/지침 : $MEM_DIR   (HOME에서 실행 시 로드 + 자가 갱신)"
+echo "    메모리/지침 : $MEM_SRC   (HOME 또는 이 repo 에서 세션을 열면 로드 + 자가 갱신)"
