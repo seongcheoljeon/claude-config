@@ -35,6 +35,8 @@ claude plugin install context-mode@context-mode                || true
 claude plugin install andrej-karpathy-skills@karpathy-skills   || true
 claude plugin install claude-dashboard@claude-dashboard        || true
 claude plugin install ponytail@ponytail                        || true
+# swift-lsp 은 기본 내장 마켓플레이스(claude-plugins-official) 소속 — marketplace add 불필요
+claude plugin install swift-lsp@claude-plugins-official        || true
 
 # 2) statusLine 대시보드 index.js 경로 자동 탐색 (설치된 최신 버전)
 #    버전 폴더명을 자리수 고정으로 패딩해 정렬 — sort -V 에 의존하지 않음.

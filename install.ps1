@@ -40,7 +40,8 @@ foreach ($m in 'mksglu/context-mode','forrestchang/andrej-karpathy-skills','uppi
   try { claude plugin marketplace add $m } catch { Write-Host "   (건너뜀) marketplace add $m" }
 }
 Write-Host "==> 플러그인 설치"
-foreach ($p in 'context-mode@context-mode','andrej-karpathy-skills@karpathy-skills','claude-dashboard@claude-dashboard','ponytail@ponytail') {
+# swift-lsp 은 기본 내장 마켓플레이스(claude-plugins-official) 소속 - marketplace add 불필요
+foreach ($p in 'context-mode@context-mode','andrej-karpathy-skills@karpathy-skills','claude-dashboard@claude-dashboard','ponytail@ponytail','swift-lsp@claude-plugins-official') {
   try { claude plugin install $p } catch { Write-Host "   (건너뜀) install $p" }
 }
 

@@ -19,7 +19,8 @@
     "context-mode@context-mode": true,
     "andrej-karpathy-skills@karpathy-skills": true,
     "claude-dashboard@claude-dashboard": true,
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "swift-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "context-mode": {
