@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
+      "Read(//usr/local/bin/**)",
+      "Bash(ls ~/.nvm/versions/node/*/bin/node)",
       "mcp__plugin_context-mode_context-mode__ctx_execute",
+      "Bash(mkdir -p /tmp/skill_edit)",
+      "Read(//tmp/**)",
       "mcp__plugin_context-mode_context-mode__ctx_doctor",
       "mcp__plugin_context-mode_context-mode__ctx_upgrade",
       "Bash(node:*)"

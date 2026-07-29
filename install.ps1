@@ -1,6 +1,6 @@
 ﻿# Claude Code 설정 이식 스크립트 (Windows PowerShell 5.1 / 7 모두 지원)
-# - 플러그인 3개 재설치, settings 배치, statusLine 경로 자동 탐색,
-#   전역 CLAUDE.md 배치, 메모리/지침 복사
+# - 플러그인 4개 재설치, settings 배치, statusLine 경로 자동 탐색,
+#   훅 배치, 전역 CLAUDE.md 배치, 메모리/지침 복사
 # 실행: powershell -ExecutionPolicy Bypass -File .\install.ps1
 #
 # 인코딩 정책:
@@ -27,15 +27,20 @@ if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
   exit 1
 }
 
+# 0-1) node 확인 (statusLine + SessionStart 훅이 의존. 없으면 조용히 실패하므로 경고)
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+  Write-Warning "'node' 미발견 - statusLine과 SessionStart 훅이 동작하지 않습니다. Node.js 설치 권장 (설치는 계속 진행)"
+}
+
 New-Item -ItemType Directory -Force -Path $ClaudeDir | Out-Null
 
 # 1) 마켓플레이스 등록 + 플러그인 설치 (개별 실패는 무시하고 계속)
 Write-Host "==> 마켓플레이스 등록"
-foreach ($m in 'mksglu/context-mode','forrestchang/andrej-karpathy-skills','uppinote20/claude-dashboard') {
+foreach ($m in 'mksglu/context-mode','forrestchang/andrej-karpathy-skills','uppinote20/claude-dashboard','DietrichGebert/ponytail') {
   try { claude plugin marketplace add $m } catch { Write-Host "   (건너뜀) marketplace add $m" }
 }
 Write-Host "==> 플러그인 설치"
-foreach ($p in 'context-mode@context-mode','andrej-karpathy-skills@karpathy-skills','claude-dashboard@claude-dashboard') {
+foreach ($p in 'context-mode@context-mode','andrej-karpathy-skills@karpathy-skills','claude-dashboard@claude-dashboard','ponytail@ponytail') {
   try { claude plugin install $p } catch { Write-Host "   (건너뜀) install $p" }
 }
 
@@ -66,21 +71,50 @@ foreach ($f in 'settings.json','settings.local.json') {
   $dst = Join-Path $ClaudeDir $f
   if (Test-Path $dst) { Copy-Item $dst "$dst.bak.$ts" -Force; Write-Host "==> 기존 $f 백업: $f.bak.$ts" }
 }
-$settingsText = [System.IO.File]::ReadAllText((Join-Path $Data 'settings.json')).Replace('__STATUSLINE_CMD__', $StatusLineCmd)
+$settingsText = [System.IO.File]::ReadAllText((Join-Path $Data 'settings.json')).
+  Replace('__STATUSLINE_CMD__', $StatusLineCmd).
+  Replace('__CLAUDE_DIR__', ($ClaudeDir -replace '\\','/'))
 [System.IO.File]::WriteAllText((Join-Path $ClaudeDir 'settings.json'), $settingsText, $Utf8NoBom)
 Copy-Item (Join-Path $Data 'settings.local.json') (Join-Path $ClaudeDir 'settings.local.json') -Force
+
+# 3-1) 훅 스크립트 배치 (settings.json의 SessionStart가 참조)
+$hookSrc = Join-Path $Data 'hooks'
+if (Test-Path $hookSrc) {
+  $hookDst = Join-Path $ClaudeDir 'hooks'
+  New-Item -ItemType Directory -Force -Path $hookDst | Out-Null
+  Copy-Item (Join-Path $hookSrc '*') $hookDst -Force
+  Write-Host "==> 훅 배치: $hookDst"
+}
 
 # 4) 전역 지침 CLAUDE.md — 어느 폴더에서 실행하든 항상 로드됨 (기존 파일 백업)
 $claudeMd = Join-Path $ClaudeDir 'CLAUDE.md'
 if (Test-Path $claudeMd) { Copy-Item $claudeMd "$claudeMd.bak.$ts" -Force; Write-Host "==> 기존 CLAUDE.md 백업: CLAUDE.md.bak.$ts" }
 Copy-Item (Join-Path $Data 'CLAUDE.md') $claudeMd -Force
 
-# 5) 메모리/지침 복사 — home-as-project 경로 산출 (Claude Code 규칙: 비영숫자 -> '-')
-#    (자가 갱신 메모리 시스템 + reference 노트 보존용. HOME에서 claude 실행 시 로드)
+# 5) 메모리/지침 — repo 의 data\memory 를 단일 원본으로 디렉토리 junction
+#    복사가 아니라 링크. 메모리 자가 갱신이 곧 repo 수정이 되므로
+#    동기화는 git pull/push 가 전부 처리.
+#    junction(/J) 은 symlink 와 달리 관리자 권한/개발자 모드가 불필요.
+#    -> 이 repo 는 삭제/이동하면 안 됨. 설치 후에도 계속 사용되는 실 저장소.
 $Sanitized = ($HOME -replace '[^A-Za-z0-9]','-')
-$MemDir = Join-Path $ClaudeDir "projects/$Sanitized/memory"
-New-Item -ItemType Directory -Force -Path $MemDir | Out-Null
-Copy-Item (Join-Path $Data 'memory\*.md') $MemDir -Force
+$MemDir = (Join-Path $ClaudeDir "projects/$Sanitized/memory") -replace '/','\'
+$MemSrc = (Join-Path $Data 'memory') -replace '/','\'
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $MemDir) | Out-Null
+
+$existing = Get-Item -LiteralPath $MemDir -Force -ErrorAction SilentlyContinue
+if ($existing -and ($existing.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+  cmd /c rmdir "$MemDir" | Out-Null          # 기존 링크 -> 교체 (백업 불필요)
+} elseif ($existing) {
+  # 실제 디렉토리 -> repo 에 없는 로컬 메모리를 먼저 회수(덮어쓰지 않음) 후 백업
+  Get-ChildItem -LiteralPath $MemDir -Filter '*.md' -ErrorAction SilentlyContinue | ForEach-Object {
+    $t = Join-Path $MemSrc $_.Name
+    if (-not (Test-Path -LiteralPath $t)) { Copy-Item $_.FullName $t; Write-Host "   회수: $($_.Name)" }
+  }
+  Rename-Item -LiteralPath $MemDir -NewName "memory.bak.$ts"
+  Write-Host "==> 기존 메모리 백업: memory.bak.$ts"
+}
+cmd /c mklink /J "$MemDir" "$MemSrc" | Out-Null
+Write-Host "==> 메모리 junction: $MemDir -> $MemSrc"
 
 Write-Host ""
 Write-Host "==> 완료 (OK)"

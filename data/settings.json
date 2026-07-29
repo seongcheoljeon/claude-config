@@ -1,6 +1,16 @@
 {
-  "model": "opus[1m]",
-  "hooks": {},
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__CLAUDE_DIR__/hooks/context-mode-cache-heal.mjs\""
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "__STATUSLINE_CMD__"
@@ -8,7 +18,8 @@
   "enabledPlugins": {
     "context-mode@context-mode": true,
     "andrej-karpathy-skills@karpathy-skills": true,
-    "claude-dashboard@claude-dashboard": true
+    "claude-dashboard@claude-dashboard": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "context-mode": {
@@ -27,6 +38,12 @@
       "source": {
         "source": "github",
         "repo": "uppinote20/claude-dashboard"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
       }
     }
   },
