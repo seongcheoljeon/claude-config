@@ -37,9 +37,15 @@ claude plugin install claude-dashboard@claude-dashboard        || true
 claude plugin install ponytail@ponytail                        || true
 
 # 2) statusLine 대시보드 index.js 경로 자동 탐색 (설치된 최신 버전)
-#    macOS(BSD sort)에서 -V 미지원일 수 있어 런타임에 확인 후 폴백
-if sort -V </dev/null >/dev/null 2>&1; then SORT_CMD="sort -V"; else SORT_CMD="sort"; fi
-DASH_INDEX="$(ls -1 "$CLAUDE_DIR"/plugins/cache/claude-dashboard/claude-dashboard/*/dist/index.js 2>/dev/null | $SORT_CMD | tail -n1 || true)"
+#    버전 폴더명을 자리수 고정으로 패딩해 정렬 — sort -V 에 의존하지 않음.
+#    (BSD sort 는 -V 미지원일 수 있고, 사전순 폴백은 1.9.0 > 1.26.1 로 오판)
+DASH_INDEX="$(
+  for f in "$CLAUDE_DIR"/plugins/cache/claude-dashboard/claude-dashboard/*/dist/index.js; do
+    [ -f "$f" ] || continue
+    v="${f%/dist/index.js}"; v="${v##*/}"
+    printf '%s\t%s\n' "$(printf '%s' "$v" | awk -F. '{printf "%05d%05d%05d", $1, $2, $3}')" "$f"
+  done | sort | tail -n1 | cut -f2-
+)"
 if [ -z "$DASH_INDEX" ]; then
   # 미발견 시 무해한 no-op으로 폴백 (에러 방지). 이후 '/claude-dashboard:update'로 경로 갱신.
   echo "!! claude-dashboard index.js 미발견 — statusLine을 no-op으로 설정. Claude Code에서 '/claude-dashboard:update' 실행 권장"
