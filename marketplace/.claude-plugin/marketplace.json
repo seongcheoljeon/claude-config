@@ -1,0 +1,77 @@
+{
+  "name": "claude-skills-jsc",
+  "id": "claude-skills-jsc",
+  "owner": {
+    "name": "Seongcheol Jeon",
+    "email": "seongcheoljeon@mistilgames.com"
+  },
+  "metadata": {
+    "description": "UE5/Houdini/HDK/GPU Gems 셰이더·렌더링·시뮬레이션·알고리즘 작업용 Claude Code 플러그인 모음 (7개)",
+    "version": "1.2.0"
+  },
+  "plugins": [
+    {
+      "name": "unreal-dev-kb",
+      "source": "./unreal-dev-kb",
+      "description": "UE5 셰이더/렌더링/머티리얼/이펙트/디버깅 cvar/매크로/콘솔명령 약 2,000+ 카탈로그 (9개 영역). 협력: ue5-rdg(C++ API), ue5-shaders(HLSL 코드)",
+      "version": "1.1.0",
+      "author": { "name": "Seongcheol Jeon" },
+      "keywords": ["unreal", "ue5", "shader", "rendering", "rdg", "lumen", "nanite", "niagara", "hlsl", "renderdoc", "cvar", "catalog", "console-variable"],
+      "category": "reference"
+    },
+    {
+      "name": "ue5-rdg",
+      "source": "./ue5-rdg",
+      "description": "UE5 RDG C++ API 작성 패턴. FRDGBuilder/AddPass, Compute/Raster/Copy Pass, Scene View Extension, Resource 생명주기. 협력: unreal-dev-kb(cvar), ue5-shaders(HLSL)",
+      "version": "1.1.0",
+      "author": { "name": "Seongcheol Jeon" },
+      "keywords": ["ue5", "rdg", "render-graph", "FRDGBuilder", "AddPass", "compute-pass", "raster-pass", "scene-view-extension", "rendering"],
+      "category": "reference"
+    },
+    {
+      "name": "ue5-shaders",
+      "source": "./ue5-shaders",
+      "description": "UE 5.7.4+ Engine/Shaders HLSL 트리 라우터. Material translator, Vertex Factory, BasePass, Substrate BSDF, Lumen/Nanite/VSM/TSR HLSL 흐름. 협력: unreal-dev-kb(cvar), ue5-rdg(C++ API)",
+      "version": "1.1.0",
+      "author": { "name": "Seongcheol Jeon" },
+      "keywords": ["ue5", "shader", "hlsl", "usf", "ush", "material", "lumen", "nanite", "vsm", "tsr", "ray-tracing", "substrate", "basepass", "vertex-factory"],
+      "category": "reference"
+    },
+    {
+      "name": "ue5-coding-convention",
+      "source": "./ue5-coding-convention",
+      "description": "UE5 C++ 코딩 컨벤션 — 명명, 어설션(check/ensure), 타입(int32/uint8), 포맷, enum, RPC, 데이터 검증. 협력: ue5-rdg(렌더 코드), unreal-dev-kb(런타임 cvar)",
+      "version": "1.1.0",
+      "author": { "name": "Seongcheol Jeon" },
+      "keywords": ["ue5", "cpp", "coding-convention", "naming", "code-style", "best-practice", "check-macro", "uproperty"],
+      "category": "workflow"
+    },
+    {
+      "name": "gpu-fluid-sim",
+      "source": "./gpu-fluid-sim",
+      "description": "GPU Eulerian Fluid Simulation (Stable Fluids/Navier-Stokes) 알고리즘. UE5 Compute Shader/Niagara Grid, Houdini Gas OpenCL/Pyro 적용. 협력: ue5-rdg(UE 구현), hdk-reference(Houdini), unreal-dev-kb(Niagara cvar)",
+      "version": "1.1.0",
+      "author": { "name": "Seongcheol Jeon" },
+      "keywords": ["fluid-simulation", "stable-fluids", "navier-stokes", "compute-shader", "niagara", "houdini", "smoke", "fire", "pyro", "maccormack", "bfecc", "vorticity"],
+      "category": "reference"
+    },
+    {
+      "name": "hdk-reference",
+      "source": "./hdk-reference",
+      "description": "Houdini 21.0 HDK C++ 레퍼런스. DSO entry points, SOP/DM/GUI/SIM/RAY/VEX/COP2/CHOP 패턴, custom primitive, viewport hooks, Mantra procedurals. 협력: gpu-fluid-sim(Pyro/Gas)",
+      "version": "1.1.0",
+      "author": { "name": "Seongcheol Jeon" },
+      "keywords": ["houdini", "hdk", "houdini-development-kit", "houdini-21", "sop", "vex", "dso", "custom-primitive", "viewport-hook"],
+      "category": "reference"
+    },
+    {
+      "name": "gpu-gems-1",
+      "source": "./gpu-gems-1",
+      "description": "GPU Gems 1 (NVIDIA, 2004) 42개 챕터 알고리즘 레퍼런스 라우터. 워터/노이즈/섀도우/라이팅/포스트프로세스/시뮬레이션/GPGPU. 협력: gpu-fluid-sim(Stable Fluids), ue5-shaders(HLSL 이식), unreal-dev-kb(cvar)",
+      "version": "1.0.0",
+      "author": { "name": "Seongcheol Jeon" },
+      "keywords": ["gpu-gems", "nvidia", "real-time-rendering", "gerstner-wave", "perlin-noise", "voronoi", "shadow-volume", "pcf", "psm", "subsurface-scattering", "ambient-occlusion", "image-based-lighting", "brdf", "depth-of-field", "bloom", "openexr", "stable-fluids", "volume-rendering", "gpgpu"],
+      "category": "reference"
+    }
+  ]
+}

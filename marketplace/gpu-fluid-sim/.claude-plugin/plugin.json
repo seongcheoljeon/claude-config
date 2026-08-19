@@ -1,0 +1,31 @@
+{
+  "name": "gpu-fluid-sim",
+  "description": "GPU Eulerian fluid simulation (Stable Fluids/Navier-Stokes) 알고리즘. UE5 Compute Shader/Niagara Grid, Houdini Gas OpenCL/Pyro 적용. 협력: ue5-rdg(UE 구현), hdk-reference(Houdini), unreal-dev-kb(Niagara cvar)",
+  "version": "1.1.0",
+  "author": {
+    "name": "Seongcheol Jeon",
+    "email": "seongcheoljeon@mistilgames.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "fluid-simulation",
+    "stable-fluids",
+    "navier-stokes",
+    "compute-shader",
+    "niagara",
+    "houdini",
+    "pyro",
+    "gas-opencl",
+    "smoke",
+    "fire",
+    "bfecc",
+    "maccormack",
+    "jacobi",
+    "vorticity",
+    "flip",
+    "pic",
+    "apic",
+    "mac-grid"
+  ],
+  "skills": ["./skills/gpu-fluid-sim"]
+}

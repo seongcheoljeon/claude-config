@@ -1,0 +1,40 @@
+{
+  "name": "gpu-gems-1",
+  "description": "GPU Gems 1 (NVIDIA, 2004) 42개 챕터 알고리즘 레퍼런스 라우터. 워터(Gerstner/caustics), 노이즈(Perlin/Voronoi), 섀도우(Volume/PCF/PSM/Omni/Soft), 라이팅(Cinematic/SSS/AO/IBL/BRDF), 포스트프로세스(Glow/DoF/ColorCurves/Bicubic/OpenEXR), 시뮬레이션(StableFluids/Volume/Deformer), GPGPU/Pipeline. 협력: gpu-fluid-sim(StableFluids), ue5-shaders(HLSL), unreal-dev-kb(cvar)",
+  "version": "1.0.0",
+  "author": {
+    "name": "Seongcheol Jeon",
+    "email": "seongcheoljeon@mistilgames.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "gpu-gems",
+    "nvidia",
+    "real-time-rendering",
+    "shader",
+    "hlsl",
+    "cg",
+    "gerstner-wave",
+    "perlin-noise",
+    "voronoi",
+    "shadow-volume",
+    "shadow-map",
+    "pcf",
+    "psm",
+    "subsurface-scattering",
+    "ambient-occlusion",
+    "image-based-lighting",
+    "brdf",
+    "depth-of-field",
+    "bloom",
+    "glow",
+    "color-grading",
+    "openexr",
+    "stable-fluids",
+    "volume-rendering",
+    "gpgpu",
+    "deformer",
+    "diffraction"
+  ],
+  "skills": ["./skills/gpu-gems-1"]
+}

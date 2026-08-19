@@ -1,0 +1,32 @@
+{
+  "name": "unreal-dev-kb",
+  "description": "UE5 셰이더/렌더링/머티리얼/이펙트/디버깅 cvar/매크로/콘솔명령 약 2,000+ 카탈로그 (9개 영역). 소스 빌드 엔진 직접 추출. 협력: ue5-rdg(C++ API), ue5-shaders(HLSL 코드)",
+  "version": "1.1.0",
+  "author": {
+    "name": "Seongcheol Jeon",
+    "email": "seongcheoljeon@mistilgames.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "unreal",
+    "ue5",
+    "shader",
+    "rendering",
+    "material",
+    "rdg",
+    "lumen",
+    "nanite",
+    "ray-tracing",
+    "vsm",
+    "niagara",
+    "hlsl",
+    "custom-node",
+    "renderdoc",
+    "pix",
+    "rgp",
+    "profiling",
+    "visualization",
+    "debug-view"
+  ],
+  "skills": ["./skills/unreal-dev-kb"]
+}
