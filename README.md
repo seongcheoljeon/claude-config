@@ -28,18 +28,25 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 
 ## 실행하면 되는 일
 
-1. 마켓플레이스 등록 + 플러그인 6개 설치 (context-mode, andrej-karpathy-skills, claude-dashboard, ponytail, swift-lsp, clangd-lsp)
-2. `~/.claude/settings.json` · `settings.local.json` 배치
-3. `~/.claude/hooks/` 배치 — 훅 2개
+1. `claude update` — CLI 자체 업데이트
+2. 마켓플레이스 등록 + 플러그인 **14개** 설치
+   - GitHub 마켓: context-mode, andrej-karpathy-skills, claude-dashboard, ponytail, document-skills(anthropics/skills)
+   - 내장 마켓: swift-lsp, clangd-lsp
+   - **로컬 마켓 `marketplace/`** (구 ClaudeSkills repo 통합본, claude-skills-jsc):
+     unreal-dev-kb, ue5-rdg, ue5-shaders, ue5-coding-convention, gpu-fluid-sim,
+     hdk-reference, gpu-gems-1 — **별도 clone 불필요**, repo 안에서 스킬을 직접 수정하면 즉시 반영
+3. `~/.claude/settings.json` · `settings.local.json` · `keybindings.json` 배치
+   - settings.json 의 `__CLAUDE_DIR__`/`__REPO_DIR__` 플레이스홀더를 실제 경로로 치환
+4. `~/.claude/hooks/` 배치 — 훅 2개
    - `context-mode-cache-heal.mjs` (SessionStart) — context-mode 플러그인 캐시 자가복구
    - `dashboard-statusline.mjs` (statusLine) — 대시보드 최신 버전을 **매 호출마다** 해석
-4. `~/.claude/CLAUDE.md` 배치 — **어느 폴더에서 실행하든 항상 적용되는 전역 지침**
-5. 메모리를 **`data/memory` 로 symlink**(Windows: junction) — HOME 과 이 repo 폴더 두 곳
+5. `~/.claude/CLAUDE.md` 배치 — **어느 폴더에서 실행하든 항상 적용되는 전역 지침**
+6. 메모리를 **`data/memory` 로 symlink**(Windows: junction) — HOME 과 이 repo 폴더 두 곳
    - 메모리는 프로젝트 스코프라 폴더마다 경로가 다름. 두 곳 다 링크해야 설정 작업을
      어디서 하든 기존 메모리가 로드되고, 새 메모리가 git 안에 쌓인다.
    - 링크이므로 **이 repo 를 삭제/이동하면 안 됨.** 동기화는 `git pull/push` 가 전부 처리.
-
-6. 스킬을 `~/.claude/skills/<이름>` → `data/skills/<이름>` 으로 symlink(Windows: junction)
+7. 레거시 정리 — 구버전 설치가 남긴 `~/.claude/statusline-*.sh`, `install.sh` 사본,
+   `settings.json.bak` 삭제 (statusLine 은 이제 dashboard 플러그인 + 래퍼가 담당)
 
 기존 `settings*.json` / `CLAUDE.md` / `memory` / `skills` 는 `*.bak.<타임스탬프>` 로 자동
 백업되고, 원본별 **최신 3개만** 유지된다(재실행마다 누적되는 것을 방지).
@@ -49,9 +56,8 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 | 항목 | 범위 | 로드 시점 |
 |---|---|---|
 | `CLAUDE.md` 전역 지침 | **모든 폴더** | 매 세션 항상 |
-| 플러그인 6개 (user scope) | **모든 폴더** | 매 세션 |
-| statusLine · SessionStart 훅 · 권한 · theme/voice | **모든 폴더** | 매 세션 |
-| `skills/` | **모든 폴더** | description 이 맞을 때만 |
+| 플러그인 14개 (user scope) | **모든 폴더** | 매 세션 (스킬은 description 이 맞을 때만) |
+| statusLine · SessionStart 훅 · 권한 · theme/voice · keybindings | **모든 폴더** | 매 세션 |
 | `memory/` | **HOME + 이 repo 뿐** | 해당 폴더 세션에서만 |
 
 메모리는 Claude Code 설계상 **프로젝트 스코프**다(`projects/<경로치환>/memory/`). 폴더마다
@@ -59,7 +65,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 오히려 해롭다. 그래서 성격에 따라 자리를 나눈다:
 
 - **항상 적용돼야 하는 지시** → `data/CLAUDE.md`
-- **전역이지만 필요할 때만 볼 도메인 지식** → `data/skills/<이름>/SKILL.md`
+- **전역이지만 필요할 때만 볼 도메인 지식** → `marketplace/<플러그인>/skills/` (claude-skills-jsc)
 - **그 폴더에서만 유효한 진행상황** → 해당 프로젝트의 memory (그대로 둠)
 
 ## clangd-lsp — C/C++ 은 `compile_commands.json` 이 있어야 의미가 있다

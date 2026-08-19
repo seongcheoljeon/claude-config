@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Claude Code 설정 이식 스크립트 (macOS / Linux)
-# - 플러그인 6개 재설치, settings·훅·스킬 배치, 전역 CLAUDE.md 배치, 메모리 symlink
+# - CLI 업데이트, 마켓플레이스(로컬 marketplace/ 포함)·플러그인 14개 설치,
+#   settings/keybindings/훅 배치, 전역 CLAUDE.md 배치, 메모리 symlink, 레거시 정리
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -31,23 +32,36 @@ prune_baks() {                    # $1: 백업 대상 원본 경로
 
 mkdir -p "$CLAUDE_DIR"
 
+# 0-3) claude CLI 자체 업데이트 (실패해도 설치는 계속)
+claude update || true
+
 # 1) 마켓플레이스 등록 + 플러그인 설치
 echo "==> 마켓플레이스 등록"
 claude plugin marketplace add mksglu/context-mode              || true
 claude plugin marketplace add forrestchang/andrej-karpathy-skills || true
 claude plugin marketplace add uppinote20/claude-dashboard      || true
 claude plugin marketplace add DietrichGebert/ponytail          || true
+claude plugin marketplace add anthropics/skills                || true
+# claude-skills-jsc: 이 repo 에 통합된 로컬 마켓플레이스 (marketplace/)
+# — 별도 clone 불필요, repo 안에서 스킬을 직접 수정하면 즉시 반영
+claude plugin marketplace add "$SCRIPT_DIR/marketplace"        || true
 
 echo "==> 플러그인 설치"
 claude plugin install context-mode@context-mode                || true
 claude plugin install andrej-karpathy-skills@karpathy-skills   || true
 claude plugin install claude-dashboard@claude-dashboard        || true
 claude plugin install ponytail@ponytail                        || true
+claude plugin install document-skills@anthropic-agent-skills   || true
 # 아래 2개는 기본 내장 마켓플레이스(claude-plugins-official) 소속 — marketplace add 불필요
 claude plugin install swift-lsp@claude-plugins-official        || true
 # clangd-lsp: C/C++ 코드 인텔리전스. compile_commands.json 이 있는 프로젝트에서만 제대로 동작
 # (UE 는 RunUBT.sh -mode=GenerateClangDatabase, CMake 는 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 claude plugin install clangd-lsp@claude-plugins-official       || true
+# claude-skills-jsc 7종 (UE5/HDK/GPU Gems)
+for p in unreal-dev-kb ue5-rdg ue5-shaders ue5-coding-convention \
+         gpu-fluid-sim hdk-reference gpu-gems-1; do
+  claude plugin install "$p@claude-skills-jsc"                 || true
+done
 
 # 2) statusLine 은 hooks/dashboard-statusline.mjs 래퍼가 담당 (settings.json 에 고정)
 #    설치 시점 경로를 박지 않는다 — 플러그인이 업데이트되면 캐시 버전 폴더가
@@ -66,8 +80,17 @@ for f in settings.json settings.local.json; do
   fi
 done
 sed -e "s#__CLAUDE_DIR__#${CLAUDE_DIR}#g" \
+    -e "s#__REPO_DIR__#${SCRIPT_DIR}#g" \
     "$DATA/settings.json" > "$CLAUDE_DIR/settings.json"
 cp "$DATA/settings.local.json" "$CLAUDE_DIR/settings.local.json"
+
+# 3-0) keybindings.json (기존 파일 백업 후 배치)
+if [ -f "$CLAUDE_DIR/keybindings.json" ]; then
+  cp "$CLAUDE_DIR/keybindings.json" "$CLAUDE_DIR/keybindings.json.bak.$TS"
+  prune_baks "$CLAUDE_DIR/keybindings.json"
+fi
+cp "$DATA/keybindings.json" "$CLAUDE_DIR/keybindings.json"
+echo "==> keybindings.json 배치"
 
 # 3-1) 훅 스크립트 배치 (settings.json의 SessionStart가 참조 — 실행권한 필수)
 if [ -d "$DATA/hooks" ]; then
@@ -151,6 +174,15 @@ link_mem() {                      # $1: 프로젝트 루트 경로
 
 link_mem "$HOME"           # 홈에서 세션을 열 때
 link_mem "$SCRIPT_DIR"     # 이 repo 폴더에서 세션을 열 때
+
+# 6) 레거시 정리 — 구버전 설치 방식이 남긴 파일 (statusLine 은 이제 dashboard 플러그인 담당)
+for legacy in statusline-command.sh statusline-mem-update.sh statusline-usage-update.sh \
+              install.sh settings.json.bak; do
+  if [ -f "$CLAUDE_DIR/$legacy" ]; then
+    rm -f "$CLAUDE_DIR/$legacy"
+    echo "==> 레거시 삭제: $legacy"
+  fi
+done
 
 echo ""
 echo "==> 완료 ✅"

@@ -1,13 +1,24 @@
 {
   "permissions": {
     "allow": [
-      "Read(//usr/local/bin/**)",
+      "WebSearch",
+      "WebFetch(domain:www.sidefx.com)",
+      "WebFetch(domain:forums.odforce.net)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(npm list:*)",
+      "Bash(npm --version)",
+      "Bash(claude --version)",
       "Bash(ls ~/.nvm/versions/node/*/bin/node)",
-      "mcp__plugin_context-mode_context-mode__ctx_execute",
       "Read(//tmp/**)",
+      "Read(//usr/local/bin/**)",
+      "Read(//mnt/c/Users/admin/source/repos/**)",
+      "mcp__plugin_context-mode_context-mode__ctx_execute",
+      "mcp__plugin_context-mode_context-mode__ctx_batch_execute",
+      "mcp__plugin_context-mode_context-mode__ctx_search",
+      "mcp__plugin_context-mode_context-mode__ctx_fetch_and_index",
       "mcp__plugin_context-mode_context-mode__ctx_doctor",
-      "mcp__plugin_context-mode_context-mode__ctx_upgrade",
-      "Bash(node:*)"
+      "mcp__plugin_context-mode_context-mode__ctx_upgrade"
     ]
   }
 }

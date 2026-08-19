@@ -1,6 +1,6 @@
 ﻿# Claude Code 설정 이식 스크립트 (Windows PowerShell 5.1 / 7 모두 지원)
-# - 플러그인 6개 재설치, settings·훅·스킬 배치,
-#   전역 CLAUDE.md 배치, 메모리 junction
+# - CLI 업데이트, 마켓플레이스(로컬 marketplace\ 포함)·플러그인 14개 설치,
+#   settings/keybindings/훅 배치, 전역 CLAUDE.md 배치, 메모리 junction, 레거시 정리
 # 실행: powershell -ExecutionPolicy Bypass -File .\install.ps1
 #
 # 인코딩 정책:
@@ -43,16 +43,23 @@ function Prune-Baks([string]$Path) {
 
 New-Item -ItemType Directory -Force -Path $ClaudeDir | Out-Null
 
+# 0-3) claude CLI 자체 업데이트 (실패해도 설치는 계속)
+try { claude update } catch { Write-Host "   (건너뜀) claude update" }
+
 # 1) 마켓플레이스 등록 + 플러그인 설치 (개별 실패는 무시하고 계속)
 Write-Host "==> 마켓플레이스 등록"
-foreach ($m in 'mksglu/context-mode','forrestchang/andrej-karpathy-skills','uppinote20/claude-dashboard','DietrichGebert/ponytail') {
+# claude-skills-jsc: 이 repo 에 통합된 로컬 마켓플레이스 (marketplace\)
+# - 별도 clone 불필요, repo 안에서 스킬을 직접 수정하면 즉시 반영
+$localMarket = Join-Path $ScriptDir 'marketplace'
+foreach ($m in 'mksglu/context-mode','forrestchang/andrej-karpathy-skills','uppinote20/claude-dashboard','DietrichGebert/ponytail','anthropics/skills',$localMarket) {
   try { claude plugin marketplace add $m } catch { Write-Host "   (건너뜀) marketplace add $m" }
 }
 Write-Host "==> 플러그인 설치"
-# 뒤의 2개(swift-lsp, clangd-lsp)는 기본 내장 마켓플레이스(claude-plugins-official) 소속 - marketplace add 불필요
+# swift-lsp, clangd-lsp 는 기본 내장 마켓플레이스(claude-plugins-official) 소속 - marketplace add 불필요
 # clangd-lsp: C/C++ 코드 인텔리전스. compile_commands.json 이 있는 프로젝트에서만 제대로 동작
 # (UE 는 RunUBT.sh -mode=GenerateClangDatabase, CMake 는 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
-foreach ($p in 'context-mode@context-mode','andrej-karpathy-skills@karpathy-skills','claude-dashboard@claude-dashboard','ponytail@ponytail','swift-lsp@claude-plugins-official','clangd-lsp@claude-plugins-official') {
+foreach ($p in 'context-mode@context-mode','andrej-karpathy-skills@karpathy-skills','claude-dashboard@claude-dashboard','ponytail@ponytail','document-skills@anthropic-agent-skills','swift-lsp@claude-plugins-official','clangd-lsp@claude-plugins-official',
+              'unreal-dev-kb@claude-skills-jsc','ue5-rdg@claude-skills-jsc','ue5-shaders@claude-skills-jsc','ue5-coding-convention@claude-skills-jsc','gpu-fluid-sim@claude-skills-jsc','hdk-reference@claude-skills-jsc','gpu-gems-1@claude-skills-jsc') {
   try { claude plugin install $p } catch { Write-Host "   (건너뜀) install $p" }
 }
 
@@ -71,9 +78,16 @@ foreach ($f in 'settings.json','settings.local.json') {
   if (Test-Path $dst) { Copy-Item $dst "$dst.bak.$ts" -Force; Write-Host "==> 기존 $f 백업: $f.bak.$ts"; Prune-Baks $dst }
 }
 $settingsText = [System.IO.File]::ReadAllText((Join-Path $Data 'settings.json')).
-  Replace('__CLAUDE_DIR__', ($ClaudeDir -replace '\\','/'))
+  Replace('__CLAUDE_DIR__', ($ClaudeDir -replace '\\','/')).
+  Replace('__REPO_DIR__', ($ScriptDir -replace '\\','/'))
 [System.IO.File]::WriteAllText((Join-Path $ClaudeDir 'settings.json'), $settingsText, $Utf8NoBom)
 Copy-Item (Join-Path $Data 'settings.local.json') (Join-Path $ClaudeDir 'settings.local.json') -Force
+
+# 3-0) keybindings.json (기존 파일 백업 후 배치)
+$kb = Join-Path $ClaudeDir 'keybindings.json'
+if (Test-Path $kb) { Copy-Item $kb "$kb.bak.$ts" -Force; Prune-Baks $kb }
+Copy-Item (Join-Path $Data 'keybindings.json') $kb -Force
+Write-Host "==> keybindings.json 배치"
 
 # 3-1) 훅 스크립트 배치 (settings.json의 SessionStart가 참조)
 $hookSrc = Join-Path $Data 'hooks'
@@ -153,6 +167,12 @@ function Link-Mem([string]$ProjectRoot) {
 
 Link-Mem $HOME        # 홈에서 세션을 열 때
 Link-Mem $ScriptDir   # 이 repo 폴더에서 세션을 열 때
+
+# 6) 레거시 정리 - 구버전 설치 방식이 남긴 파일 (statusLine 은 이제 dashboard 플러그인 담당)
+foreach ($legacy in 'statusline-command.sh','statusline-mem-update.sh','statusline-usage-update.sh','install.sh','settings.json.bak') {
+  $lp = Join-Path $ClaudeDir $legacy
+  if (Test-Path -LiteralPath $lp) { Remove-Item -LiteralPath $lp -Force; Write-Host "==> 레거시 삭제: $legacy" }
+}
 
 Write-Host ""
 Write-Host "==> 완료 (OK)"

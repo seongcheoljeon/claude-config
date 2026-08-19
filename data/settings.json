@@ -1,4 +1,10 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "defaultMode": "auto"
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -21,7 +27,15 @@
     "claude-dashboard@claude-dashboard": true,
     "ponytail@ponytail": true,
     "swift-lsp@claude-plugins-official": true,
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "document-skills@anthropic-agent-skills": true,
+    "unreal-dev-kb@claude-skills-jsc": true,
+    "ue5-rdg@claude-skills-jsc": true,
+    "ue5-shaders@claude-skills-jsc": true,
+    "ue5-coding-convention@claude-skills-jsc": true,
+    "gpu-fluid-sim@claude-skills-jsc": true,
+    "hdk-reference@claude-skills-jsc": true,
+    "gpu-gems-1@claude-skills-jsc": true
   },
   "extraKnownMarketplaces": {
     "context-mode": {
@@ -47,13 +61,29 @@
         "source": "github",
         "repo": "DietrichGebert/ponytail"
       }
+    },
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    },
+    "claude-skills-jsc": {
+      "source": {
+        "source": "directory",
+        "path": "__REPO_DIR__/marketplace"
+      }
     }
   },
+  "language": "korean",
   "tui": "fullscreen",
+  "editorMode": "vim",
+  "skipAutoPermissionPrompt": true,
+  "model": "claude-fable-5[1m]",
+  "theme": "dark",
   "voice": {
     "enabled": true,
     "mode": "hold"
   },
-  "theme": "dark",
   "voiceEnabled": true
 }
