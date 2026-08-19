@@ -76,6 +76,7 @@
       }
     }
   },
+  "autoDreamEnabled": true,
   "language": "korean",
   "tui": "fullscreen",
   "editorMode": "vim",
