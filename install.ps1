@@ -59,7 +59,7 @@ Write-Host "==> 플러그인 설치"
 # clangd-lsp: C/C++ 코드 인텔리전스. compile_commands.json 이 있는 프로젝트에서만 제대로 동작
 # (UE 는 RunUBT.sh -mode=GenerateClangDatabase, CMake 는 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 foreach ($p in 'context-mode@context-mode','andrej-karpathy-skills@karpathy-skills','claude-dashboard@claude-dashboard','ponytail@ponytail','document-skills@anthropic-agent-skills','swift-lsp@claude-plugins-official','clangd-lsp@claude-plugins-official',
-              'unreal-dev-kb@claude-skills-jsc','ue5-rdg@claude-skills-jsc','ue5-shaders@claude-skills-jsc','ue5-coding-convention@claude-skills-jsc','gpu-fluid-sim@claude-skills-jsc','hdk-reference@claude-skills-jsc','gpu-gems-1@claude-skills-jsc') {
+              'unreal-dev-kb@claude-skills-jsc','ue5-rdg@claude-skills-jsc','ue5-shaders@claude-skills-jsc','ue5-coding-convention@claude-skills-jsc','gpu-fluid-sim@claude-skills-jsc','hdk-reference@claude-skills-jsc','gpu-gems-1@claude-skills-jsc','consolidate-memory@claude-skills-jsc') {
   try { claude plugin install $p } catch { Write-Host "   (건너뜀) install $p" }
 }
 
