@@ -6,8 +6,8 @@
     "email": "seongcheoljeon@mistilgames.com"
   },
   "metadata": {
-    "description": "UE5/Houdini/HDK/GPU Gems 셰이더·렌더링·시뮬레이션·알고리즘 작업용 Claude Code 플러그인 모음 (8개)",
-    "version": "1.3.0"
+    "description": "UE5/Houdini/HDK/GPU Gems 셰이더·렌더링·시뮬레이션·알고리즘 작업용 Claude Code 플러그인 모음 (7개)",
+    "version": "1.3.1"
   },
   "plugins": [
     {
@@ -177,22 +177,6 @@
         "gpgpu"
       ],
       "category": "reference"
-    },
-    {
-      "name": "consolidate-memory",
-      "source": "./consolidate-memory",
-      "description": "메모리 파일 리플렉티브 정리 패스 — 중복 병합, 낡은 사실 수정/삭제, MEMORY.md 인덱스 재정비",
-      "version": "1.0.0",
-      "author": {
-        "name": "Seongcheol Jeon"
-      },
-      "keywords": [
-        "memory",
-        "memory-consolidation",
-        "memory-management",
-        "knowledge-base"
-      ],
-      "category": "workflow"
     }
   ]
 }

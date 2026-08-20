@@ -35,8 +35,7 @@
     "ue5-coding-convention@claude-skills-jsc": true,
     "gpu-fluid-sim@claude-skills-jsc": true,
     "hdk-reference@claude-skills-jsc": true,
-    "gpu-gems-1@claude-skills-jsc": true,
-    "consolidate-memory@claude-skills-jsc": true
+    "gpu-gems-1@claude-skills-jsc": true
   },
   "extraKnownMarketplaces": {
     "context-mode": {

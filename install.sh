@@ -57,9 +57,9 @@ claude plugin install swift-lsp@claude-plugins-official        || true
 # clangd-lsp: C/C++ 코드 인텔리전스. compile_commands.json 이 있는 프로젝트에서만 제대로 동작
 # (UE 는 RunUBT.sh -mode=GenerateClangDatabase, CMake 는 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 claude plugin install clangd-lsp@claude-plugins-official       || true
-# claude-skills-jsc 8종 (UE5/HDK/GPU Gems/메모리 정리)
+# claude-skills-jsc 7종 (UE5/HDK/GPU Gems)
 for p in unreal-dev-kb ue5-rdg ue5-shaders ue5-coding-convention \
-         gpu-fluid-sim hdk-reference gpu-gems-1 consolidate-memory; do
+         gpu-fluid-sim hdk-reference gpu-gems-1; do
   claude plugin install "$p@claude-skills-jsc"                 || true
 done
 
