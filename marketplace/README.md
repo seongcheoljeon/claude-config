@@ -57,13 +57,16 @@ marketplace/
 │       └── quirks.md
 ├── ue5-coding-convention/
 │   ├── .claude-plugin/plugin.json
-│   └── skills/ue5-coding-convention/SKILL.md
+│   ├── skills/ue5-coding-convention/SKILL.md
+│   └── README.md
 ├── gpu-fluid-sim/
 │   ├── .claude-plugin/plugin.json
-│   └── skills/gpu-fluid-sim/SKILL.md
+│   ├── skills/gpu-fluid-sim/SKILL.md
+│   └── README.md
 ├── hdk-reference/
 │   ├── .claude-plugin/plugin.json
-│   └── skills/hdk-reference/SKILL.md
+│   ├── skills/hdk-reference/SKILL.md
+│   └── README.md
 ├── gpu-gems-1/
 │   ├── .claude-plugin/plugin.json
 │   ├── skills/gpu-gems-1/
@@ -145,7 +148,7 @@ marketplace/
 `scripts/new-plugin.sh`로 plugin skeleton 자동 생성:
 
 ```bash
-cd /mnt/c/Users/admin/source/repos/ClaudeSkills
+cd <claude-config 경로>/marketplace
 ./scripts/new-plugin.sh <plugin-name> "<description>" [category]
 
 # 예시
@@ -179,6 +182,12 @@ cd /mnt/c/Users/admin/source/repos/ClaudeSkills
 
 ## 변경 이력
 
+### v1.3.1 (2026-08-20)
+- `consolidate-memory` 플러그인 제거 — Claude Code 내장 auto-dream 메모리 통합으로 대체
+
+### v1.3.0 (2026-08-19)
+- `consolidate-memory` 스킬 플러그인 추가 (v1.3.1에서 revert)
+
 ### v1.2.0 (2026-05-04)
 - `gpu-gems-1` 신규 추가 — GPU Gems 1 (NVIDIA, 2004) 42개 챕터 한글 학습 노트 + 라우팅 테이블 (11 그룹)
 - README 시나리오 매트릭스에 GPU Gems 알고리즘 시나리오 4개 추가 (SSS/AO/IBL, 물/연기/불, 섀도우 비교, 포스트프로세스)
@@ -195,24 +204,6 @@ cd /mnt/c/Users/admin/source/repos/ClaudeSkills
 - 6개 plugin 표준 marketplace 구조로 변환
 - `unreal-dev-kb` 신규 추가 (UE5 cvar/매크로 카탈로그 약 2,000+ 항목)
 - 기존 `.skill` 5개를 plugin 디렉토리로 압축 해제
-
-## 다른 PC 셋업 가이드
-
-### Windows (네이티브)
-```cmd
-cd C:\Users\<user>\source\repos
-git clone <repo-url> ClaudeSkills
-claude plugin marketplace add C:\Users\<user>\source\repos\ClaudeSkills
-```
-
-### WSL / Linux / Mac
-```bash
-cd ~/source/repos  # 또는 원하는 위치
-git clone <repo-url> ClaudeSkills
-claude plugin marketplace add ~/source/repos/ClaudeSkills
-```
-
-이후 `claude plugin install <name>@claude-skills-jsc`로 원하는 플러그인 설치.
 
 ## 라이선스
 

@@ -1,0 +1,9 @@
+{
+  "language": "ko",
+  "plan": "max",
+  "displayMode": "detailed",
+  "theme": "default",
+  "cache": {
+    "ttlSeconds": 300
+  }
+}

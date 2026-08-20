@@ -19,8 +19,14 @@ if ! command -v claude >/dev/null 2>&1; then
   exit 1
 fi
 
-# 0-1) node 확인 (statusLine + SessionStart 훅이 의존. 없으면 조용히 실패하므로 경고)
-command -v node >/dev/null 2>&1 || echo "!! 'node' 미발견 — statusLine과 SessionStart 훅이 동작하지 않습니다. Node.js 설치 권장 (설치는 계속 진행)" >&2
+# 0-1) bun 확인 — statusLine·SessionStart 훅·context-mode MCP가 모두 bun으로 동작하는 필수 런타임.
+#      없으면 반쯤 고장난 환경이 되므로 설치를 안내하고 중단 (claude CLI 확인과 같은 패턴)
+if ! command -v bun >/dev/null 2>&1; then
+  echo "!! 'bun' 미발견 — statusLine·SessionStart 훅·context-mode MCP가 모두 bun으로 동작합니다." >&2
+  echo "   설치 후 다시 실행하세요:  curl -fsSL https://bun.sh/install | bash" >&2
+  echo "   (macOS 는 'brew install oven-sh/bun/bun' 도 가능)" >&2
+  exit 1
+fi
 
 # 0-2) 백업은 재실행마다 누적되므로 원본별 최신 3개만 남긴다 (파일/디렉토리 공통)
 prune_baks() {                    # $1: 백업 대상 원본 경로
@@ -70,9 +76,11 @@ if ! compgen -G "$CLAUDE_DIR/plugins/cache/claude-dashboard/claude-dashboard/*/d
   echo "!! claude-dashboard 미발견 — statusLine 은 대시보드 설치 후 자동으로 살아납니다"
 fi
 
-# 3) settings.json / settings.local.json (기존 파일 백업 후 배치)
+# 3) settings.json / settings.local.json / claude-dashboard.local.json (기존 파일 백업 후 배치)
+#    claude-dashboard.local.json: 대시보드 표시 설정(detailed·한국어) — 없으면 compact·영어 기본값으로 떠서
+#    OS 간 상태줄 정보량이 달라진다
 TS="$(date +%Y%m%d%H%M%S)"
-for f in settings.json settings.local.json; do
+for f in settings.json settings.local.json claude-dashboard.local.json; do
   if [ -f "$CLAUDE_DIR/$f" ]; then
     cp "$CLAUDE_DIR/$f" "$CLAUDE_DIR/$f.bak.$TS"
     echo "==> 기존 $f 백업: $f.bak.$TS"
@@ -83,6 +91,7 @@ sed -e "s#__CLAUDE_DIR__#${CLAUDE_DIR}#g" \
     -e "s#__REPO_DIR__#${SCRIPT_DIR}#g" \
     "$DATA/settings.json" > "$CLAUDE_DIR/settings.json"
 cp "$DATA/settings.local.json" "$CLAUDE_DIR/settings.local.json"
+cp "$DATA/claude-dashboard.local.json" "$CLAUDE_DIR/claude-dashboard.local.json"
 
 # 3-0) keybindings.json (기존 파일 백업 후 배치)
 if [ -f "$CLAUDE_DIR/keybindings.json" ]; then

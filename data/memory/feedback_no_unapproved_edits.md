@@ -11,4 +11,4 @@ metadata:
 
 **Why:** 빌드/쿠킹 스크립트는 [[project-projectgray-dual-workspace]] 같은 실제 파이프라인에서 돌아가는 파일이라, 임의 수정이 진행 중인 작업을 깨뜨릴 수 있다. 사용자는 변경 통제를 중요하게 여긴다.
 
-**How to apply:** 진단·제안까지만 하고 diff를 보여준 뒤 멈춘다. "적용해", "바꿔줘" 같은 명시적 요청이 있을 때만 Edit를 실행한다. [[feedback-code-quality]]
+**How to apply:** 진단·제안까지만 하고 diff를 보여준 뒤 멈춘다. "적용해", "바꿔줘" 같은 명시적 요청이 있을 때만 Edit를 실행한다.

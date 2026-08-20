@@ -15,7 +15,7 @@
 # 수동으로 채워야 할 것:
 #   - SKILL.md 본문
 #   - plugin.json/marketplace.json keywords
-#   - ClaudeSkills/README.md 시나리오 매트릭스 (해당 시)
+#   - marketplace/README.md 시나리오 매트릭스 (해당 시)
 #   - git commit + push
 
 set -euo pipefail

@@ -11,7 +11,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"__CLAUDE_DIR__/hooks/context-mode-cache-heal.mjs\""
+            "command": "bun \"__CLAUDE_DIR__/hooks/context-mode-cache-heal.mjs\""
           }
         ]
       }
@@ -19,7 +19,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "node \"__CLAUDE_DIR__/hooks/dashboard-statusline.mjs\""
+    "command": "bun \"__CLAUDE_DIR__/hooks/dashboard-statusline.mjs\""
   },
   "enabledPlugins": {
     "context-mode@context-mode": true,

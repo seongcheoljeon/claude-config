@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // claude-dashboard statusLine 런처 — 캐시 "버전 폴더"를 실행 시점에 해석한다.
 // settings.json 에 .../claude-dashboard/1.30.1/dist/index.js 처럼 버전을 박으면
 // 플러그인 업데이트로 폴더가 교체되는 순간 statusLine 이 조용히 죽는다.

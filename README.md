@@ -5,8 +5,12 @@
 
 ## 사전 조건
 
-새 PC에 **Claude Code(`claude` CLI)가 이미 설치**되어 있어야 함.
-→ https://docs.claude.com/en/docs/claude-code
+새 PC에 다음 **두 가지**가 설치되어 있어야 함 (설치 스크립트가 확인하고 없으면 중단):
+
+1. **Claude Code (`claude` CLI)** → https://docs.claude.com/en/docs/claude-code
+2. **Bun** — statusLine·SessionStart 훅·context-mode MCP의 런타임 (Node.js 불필요)
+   - macOS/Linux: `curl -fsSL https://bun.sh/install | bash` (macOS는 `brew install oven-sh/bun/bun` 도 가능)
+   - Windows: `powershell -c "irm bun.sh/install.ps1 | iex"`
 
 ## 실행 방법
 
@@ -35,8 +39,10 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
    - **로컬 마켓 `marketplace/`** (구 ClaudeSkills repo 통합본, claude-skills-jsc):
      unreal-dev-kb, ue5-rdg, ue5-shaders, ue5-coding-convention, gpu-fluid-sim,
      hdk-reference, gpu-gems-1 — **별도 clone 불필요**, repo 안에서 스킬을 직접 수정하면 즉시 반영
-3. `~/.claude/settings.json` · `settings.local.json` · `keybindings.json` 배치
+3. `~/.claude/settings.json` · `settings.local.json` · `claude-dashboard.local.json` · `keybindings.json` 배치
    - settings.json 의 `__CLAUDE_DIR__`/`__REPO_DIR__` 플레이스홀더를 실제 경로로 치환
+   - claude-dashboard.local.json: 상태줄 표시 설정(detailed·한국어) — 이 파일이 없으면
+     대시보드가 compact·영어 기본값으로 떠서 OS 간 정보량이 달라진다
 4. `~/.claude/hooks/` 배치 — 훅 2개
    - `context-mode-cache-heal.mjs` (SessionStart) — context-mode 플러그인 캐시 자가복구
    - `dashboard-statusline.mjs` (statusLine) — 대시보드 최신 버전을 **매 호출마다** 해석

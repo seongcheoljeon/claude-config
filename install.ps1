@@ -27,9 +27,11 @@ if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
   exit 1
 }
 
-# 0-1) node 확인 (statusLine + SessionStart 훅이 의존. 없으면 조용히 실패하므로 경고)
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-  Write-Warning "'node' 미발견 - statusLine과 SessionStart 훅이 동작하지 않습니다. Node.js 설치 권장 (설치는 계속 진행)"
+# 0-1) bun 확인 - statusLine·SessionStart 훅·context-mode MCP가 모두 bun으로 동작하는 필수 런타임.
+#      없으면 반쯤 고장난 환경이 되므로 설치를 안내하고 중단 (claude CLI 확인과 같은 패턴)
+if (-not (Get-Command bun -ErrorAction SilentlyContinue)) {
+  Write-Error "'bun' 미발견 - statusLine·SessionStart 훅·context-mode MCP가 모두 bun으로 동작합니다. 설치 후 다시 실행: powershell -c `"irm bun.sh/install.ps1 | iex`""
+  exit 1
 }
 
 # 0-2) 백업은 재실행마다 누적되므로 원본별 최신 3개만 남긴다 (파일/디렉토리 공통)
@@ -71,9 +73,11 @@ if (-not (Get-ChildItem -Path $dashGlob -File -ErrorAction SilentlyContinue)) {
   Write-Host "!! claude-dashboard 미발견 - statusLine 은 대시보드 설치 후 자동으로 살아납니다"
 }
 
-# 3) settings.json / settings.local.json (기존 파일 백업 후 배치)
+# 3) settings.json / settings.local.json / claude-dashboard.local.json (기존 파일 백업 후 배치)
+#    claude-dashboard.local.json: 대시보드 표시 설정(detailed·한국어) — 없으면 compact·영어 기본값으로 떠서
+#    OS 간 상태줄 정보량이 달라진다
 $ts = Get-Date -Format 'yyyyMMddHHmmss'
-foreach ($f in 'settings.json','settings.local.json') {
+foreach ($f in 'settings.json','settings.local.json','claude-dashboard.local.json') {
   $dst = Join-Path $ClaudeDir $f
   if (Test-Path $dst) { Copy-Item $dst "$dst.bak.$ts" -Force; Write-Host "==> 기존 $f 백업: $f.bak.$ts"; Prune-Baks $dst }
 }
@@ -82,6 +86,7 @@ $settingsText = [System.IO.File]::ReadAllText((Join-Path $Data 'settings.json'))
   Replace('__REPO_DIR__', ($ScriptDir -replace '\\','/'))
 [System.IO.File]::WriteAllText((Join-Path $ClaudeDir 'settings.json'), $settingsText, $Utf8NoBom)
 Copy-Item (Join-Path $Data 'settings.local.json') (Join-Path $ClaudeDir 'settings.local.json') -Force
+Copy-Item (Join-Path $Data 'claude-dashboard.local.json') (Join-Path $ClaudeDir 'claude-dashboard.local.json') -Force
 
 # 3-0) keybindings.json (기존 파일 백업 후 배치)
 $kb = Join-Path $ClaudeDir 'keybindings.json'

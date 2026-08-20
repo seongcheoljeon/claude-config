@@ -1,8 +1,9 @@
 ---
-name: ProjectGray 듀얼 워크스페이스 워크플로우
+name: project-projectgray-dual-workspace
 description: ProjectGray(회사 UE 프로젝트)에서 런처 엔진과 source 빌드 엔진을 병행하기 위한 A/B 워크스페이스 + git 브리지 + SVN 마스터 구성
-type: project
-originSessionId: 0406682b-7864-40fa-97af-4bd981de1dba
+metadata:
+  type: project
+  originSessionId: 0406682b-7864-40fa-97af-4bd981de1dba
 modified: 2026-08-10T09:51:48.334Z
 ---
 회사 프로젝트 `ProjectGray`는 팀 표준이 Epic Launcher 설치본. 팀 VCS는 **SVN**. 개인 작업용으로 엔진 private 코드 디버깅이 필요해서 GitHub source 빌드를 병행.

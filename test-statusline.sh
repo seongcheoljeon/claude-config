@@ -16,11 +16,11 @@ for v in 0.1.0 1.9.0 1.26.1 1.30.1; do
   printf 'let i="";process.stdin.on("data",c=>i+=c).on("end",()=>console.log("%s|"+JSON.parse(i).model.display_name));\n' "$v" > "$d/index.js"
 done
 
-got="$(echo '{"model":{"display_name":"Opus 5"}}' | CLAUDE_CONFIG_DIR="$TMP" node "$WRAPPER")"
+got="$(echo '{"model":{"display_name":"Opus 5"}}' | CLAUDE_CONFIG_DIR="$TMP" bun "$WRAPPER")"
 [ "$got" = "1.30.1|Opus 5" ] || { echo "FAIL: 최신 버전/stdin 전달 — got: $got" >&2; exit 1; }
 
 # 버전 폴더가 아예 없을 때: 출력 없이 exit 0 (statusLine 오류 표시를 만들지 않음)
-got="$(echo '{}' | CLAUDE_CONFIG_DIR="$TMP/none" node "$WRAPPER")" || { echo "FAIL: 미설치 시 0 이 아닌 종료" >&2; exit 1; }
+got="$(echo '{}' | CLAUDE_CONFIG_DIR="$TMP/none" bun "$WRAPPER")" || { echo "FAIL: 미설치 시 0 이 아닌 종료" >&2; exit 1; }
 [ -z "$got" ] || { echo "FAIL: 미설치인데 출력 있음 — $got" >&2; exit 1; }
 
 echo "OK: statusLine 래퍼 정상 (버전 숫자정렬 + stdin 전달 + 미설치 폴백)"

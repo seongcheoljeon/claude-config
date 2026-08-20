@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // context-mode plugin cache self-heal (auto-deployed)
 // Fixes anthropics/claude-code#46915: auto-update breaks CLAUDE_PLUGIN_ROOT
 // Issue #727: also normalizes stale version paths in existing installPaths

@@ -1,8 +1,9 @@
 ---
-name: BlindDate 소개팅 앱 프로젝트
-description: UE5 풀빌드 블라인드 소개팅 앱 — 3D 아바타 + 커피한잔 벤치마크, Supabase 백엔드
-type: project
-originSessionId: efac9b8f-9bcf-48a0-9b63-433d001226b9
+name: project-dating-app
+description: UE5 풀빌드 블라인드 소개팅 앱(BlindDate) — 3D 아바타 + 커피한잔 벤치마크, Supabase 백엔드
+metadata:
+  type: project
+  originSessionId: efac9b8f-9bcf-48a0-9b63-433d001226b9
 ---
 커피한잔 벤치마크 블라인드 소개팅 앱을 UE5 C++ 풀빌드로 개발 중.
 

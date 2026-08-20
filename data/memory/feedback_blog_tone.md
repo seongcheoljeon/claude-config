@@ -1,8 +1,9 @@
 ---
-name: Blog writing tone
+name: feedback-blog-tone
 description: User's Jekyll blog (seongcheoljeon.github.io) uses informal Korean (반말) for all posts
-type: feedback
-originSessionId: c03e22e7-63ad-43d6-9210-b098d877f96e
+metadata:
+  type: feedback
+  originSessionId: c03e22e7-63ad-43d6-9210-b098d877f96e
 ---
 블로그(`seongcheoljeon.github.io`) 포스트는 **전부 반말**로 작성한다. 존댓말("~습니다", "~합니다") 금지.
 
