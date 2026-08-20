@@ -98,30 +98,6 @@ if (Test-Path $hookSrc) {
   Write-Host "==> 훅 배치: $hookDst"
 }
 
-# 3-2) 스킬 — repo 의 data\skills\* 를 junction
-#      메모리(프로젝트 스코프)와 달리 스킬은 유저 스코프라 어느 폴더에서든 쓸 수 있고,
-#      description 이 맞을 때만 로드되므로 CLAUDE.md 처럼 매 세션 컨텍스트를 먹지 않는다.
-$skillSrcRoot = Join-Path $Data 'skills'
-if (Test-Path $skillSrcRoot) {
-  $skillDstRoot = Join-Path $ClaudeDir 'skills'
-  New-Item -ItemType Directory -Force -Path $skillDstRoot | Out-Null
-  Get-ChildItem -LiteralPath $skillSrcRoot -Directory | ForEach-Object {
-    $src = $_.FullName -replace '/','\'
-    $dst = (Join-Path $skillDstRoot $_.Name) -replace '/','\'
-    $ex  = Get-Item -LiteralPath $dst -Force -ErrorAction SilentlyContinue
-    if ($ex -and ($ex.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
-      if ($ex.Target -eq $src) { Write-Host "==> 스킬 junction 이미 설정됨: $($_.Name)"; return }
-      cmd /c rmdir "$dst" | Out-Null
-    } elseif ($ex) {
-      Rename-Item -LiteralPath $dst -NewName "$($_.Name).bak.$ts"
-      Write-Host "==> 기존 스킬 백업: $($_.Name).bak.$ts"
-      Prune-Baks $dst
-    }
-    cmd /c mklink /J "$dst" "$src" | Out-Null
-    Write-Host "==> 스킬 junction: $dst -> $src"
-  }
-}
-
 # 4) 전역 지침 CLAUDE.md — 어느 폴더에서 실행하든 항상 로드됨 (기존 파일 백업)
 $claudeMd = Join-Path $ClaudeDir 'CLAUDE.md'
 if (Test-Path $claudeMd) { Copy-Item $claudeMd "$claudeMd.bak.$ts" -Force; Write-Host "==> 기존 CLAUDE.md 백업: CLAUDE.md.bak.$ts"; Prune-Baks $claudeMd }

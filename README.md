@@ -48,7 +48,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 7. 레거시 정리 — 구버전 설치가 남긴 `~/.claude/statusline-*.sh`, `install.sh` 사본,
    `settings.json.bak` 삭제 (statusLine 은 이제 dashboard 플러그인 + 래퍼가 담당)
 
-기존 `settings*.json` / `CLAUDE.md` / `memory` / `skills` 는 `*.bak.<타임스탬프>` 로 자동
+기존 `settings*.json` / `keybindings.json` / `CLAUDE.md` / `memory` 는 `*.bak.<타임스탬프>` 로 자동
 백업되고, 원본별 **최신 3개만** 유지된다(재실행마다 누적되는 것을 방지).
 
 ## 무엇이 어디까지 적용되는가

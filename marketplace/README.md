@@ -1,8 +1,8 @@
-# ClaudeSkills
+# claude-skills-jsc marketplace
 
-> Marketplace ID: `claude-skills-jsc` · Version: 1.2.0
+> Marketplace ID: `claude-skills-jsc` · claude-config repo에 통합됨 (구 ClaudeSkills repo)
 
-Seongcheol Jeon의 Claude Code 플러그인 마켓플레이스. UE5 / Houdini / HDK / GPU 시뮬레이션 / GPU Gems 알고리즘 작업용 7개 플러그인.
+Seongcheol Jeon의 Claude Code 플러그인 마켓플레이스. UE5 / Houdini / HDK / GPU 시뮬레이션 / GPU Gems 알고리즘 작업용 7개 플러그인. 버전은 `.claude-plugin/marketplace.json` 참조.
 
 ## 플러그인 목록
 
@@ -18,42 +18,21 @@ Seongcheol Jeon의 Claude Code 플러그인 마켓플레이스. UE5 / Houdini / 
 
 ## 설치 방법
 
-### 옵션 1: Claude Code Marketplace (권장)
+별도 설치 불필요 — claude-config의 `install.sh` / `install.ps1`이 이 디렉토리를
+마켓플레이스로 등록하고 플러그인 7개를 모두 설치한다. 개별 설치가 필요하면:
 
 ```bash
-# 마켓플레이스 추가 (한 번만)
-claude plugin marketplace add /mnt/c/Users/admin/source/repos/ClaudeSkills
-# Windows 경로 직접: claude plugin marketplace add C:\Users\admin\source\repos\ClaudeSkills
-
-# 원하는 플러그인 설치
-claude plugin install unreal-dev-kb@claude-skills-jsc
-claude plugin install ue5-rdg@claude-skills-jsc
-claude plugin install ue5-shaders@claude-skills-jsc
-claude plugin install ue5-coding-convention@claude-skills-jsc
-claude plugin install gpu-fluid-sim@claude-skills-jsc
-claude plugin install hdk-reference@claude-skills-jsc
-claude plugin install gpu-gems-1@claude-skills-jsc
-
-# 모두 활성화
-/reload-plugins
+claude plugin marketplace add <claude-config 경로>/marketplace
+claude plugin install <플러그인>@claude-skills-jsc
 ```
 
-### 옵션 2: Git Clone (다른 PC)
-
-```bash
-# 1. 저장소 clone
-git clone <repo-url> ~/source/repos/ClaudeSkills
-
-# 2. 마켓플레이스 추가
-claude plugin marketplace add ~/source/repos/ClaudeSkills
-
-# 3. 플러그인 설치 (위 옵션 1과 동일)
-```
+스킬을 수정하면 이 디렉토리가 곧 소스이므로 `claude plugin marketplace update claude-skills-jsc`
+후 바로 반영된다.
 
 ## 디렉토리 구조
 
 ```text
-ClaudeSkills/
+marketplace/
 ├── .claude-plugin/
 │   └── marketplace.json              ← 7개 플러그인 등록
 ├── unreal-dev-kb/                    ← 플러그인

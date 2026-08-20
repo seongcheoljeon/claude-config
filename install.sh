@@ -100,30 +100,6 @@ if [ -d "$DATA/hooks" ]; then
   echo "==> 훅 배치: $CLAUDE_DIR/hooks"
 fi
 
-# 3-2) 스킬 — repo 의 data/skills/* 를 symlink
-#      메모리(프로젝트 스코프)와 달리 스킬은 유저 스코프라 어느 폴더에서든 쓸 수 있고,
-#      description 이 맞을 때만 로드되므로 CLAUDE.md 처럼 매 세션 컨텍스트를 먹지 않는다.
-#      → 전역이어야 하지만 항상 필요하진 않은 도메인 지식은 여기에 둔다.
-if [ -d "$DATA/skills" ]; then
-  mkdir -p "$CLAUDE_DIR/skills"
-  for s in "$DATA"/skills/*/; do
-    [ -d "$s" ] || continue
-    src="${s%/}"; dst="$CLAUDE_DIR/skills/$(basename "$src")"
-    if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
-      echo "==> 스킬 symlink 이미 설정됨: $(basename "$src")"
-      continue
-    fi
-    [ -L "$dst" ] && rm -f "$dst"
-    if [ -d "$dst" ]; then
-      mv "$dst" "$dst.bak.$TS"
-      echo "==> 기존 스킬 백업: $(basename "$dst").bak.$TS"
-      prune_baks "$dst"
-    fi
-    ln -s "$src" "$dst"
-    echo "==> 스킬 symlink: $dst -> $src"
-  done
-fi
-
 # 4) 전역 지침 CLAUDE.md — 어느 폴더에서 실행하든 항상 로드됨 (기존 파일 백업)
 if [ -f "$CLAUDE_DIR/CLAUDE.md" ]; then
   cp "$CLAUDE_DIR/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md.bak.$TS"
