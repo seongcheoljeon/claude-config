@@ -124,10 +124,14 @@ clangd --check=<파일.cpp> 2>&1 | tail -3     # "All checks completed, N errors
 | claude.ai Miro | `https://mcp.miro.com` | 계정 |
 | claude.ai Microsoft 365 | `https://microsoft365.mcp.claude.com/mcp` | 계정 |
 | plugin:context-mode | `bun <plugin cache>/start.mjs` | 플러그인 |
+| ue-mcp | `npx ue-mcp <UE프로젝트>.uproject` | UE 프로젝트 |
 
 - **계정** — claude.ai 커넥터. 같은 계정으로 로그인하면 목록에 자동으로 나타나고,
   새 PC에서 `/mcp` 로 OAuth 재인증만 하면 됨. 토큰은 이 repo에 없음(있어서도 안 됨).
 - **플러그인** — context-mode 플러그인 설치 시 자동 등록. 별도 작업 불필요.
+- **UE 프로젝트** — 전역이 아닌 UE 프로젝트 단위. 각 UE 프로젝트 폴더에서
+  `npx ue-mcp init` 실행(브리지 플러그인 + 프로젝트 `.mcp.json` 자동 구성, Node 18+,
+  UE 5.4–5.8). https://ue-mcp.com/docs/getting-started
 - 현재 목록 확인: `claude mcp list`
 
 ## 참고
