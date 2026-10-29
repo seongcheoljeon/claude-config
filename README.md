@@ -43,9 +43,12 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
    - settings.json 의 `__CLAUDE_DIR__`/`__REPO_DIR__` 플레이스홀더를 실제 경로로 치환
    - claude-dashboard.local.json: 상태줄 표시 설정(detailed·한국어) — 이 파일이 없으면
      대시보드가 compact·영어 기본값으로 떠서 OS 간 정보량이 달라진다
-4. `~/.claude/hooks/` 배치 — 훅 2개
+4. `~/.claude/hooks/` 배치 — 훅 3개
    - `context-mode-cache-heal.mjs` (SessionStart) — context-mode 플러그인 캐시 자가복구
    - `dashboard-statusline.mjs` (statusLine) — 대시보드 최신 버전을 **매 호출마다** 해석
+   - `block-claude-attribution.mjs` (PreToolUse: Bash|PowerShell) — 커밋/PR에 Claude attribution
+     (`Co-Authored-By: Claude`, `noreply@anthropic.com` 등) 삽입을 차단. settings.json 의
+     `attribution` 빈 값 설정과 함께 이중 차단
 5. `~/.claude/CLAUDE.md` 배치 — **어느 폴더에서 실행하든 항상 적용되는 전역 지침**
 6. 메모리를 **`data/memory` 로 symlink**(Windows: junction) — HOME 과 이 repo 폴더 두 곳
    - 메모리는 프로젝트 스코프라 폴더마다 경로가 다름. 두 곳 다 링크해야 설정 작업을
