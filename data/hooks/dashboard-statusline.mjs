@@ -5,7 +5,7 @@
 // (context-mode-cache-heal.mjs 가 다루는 #46915 와 같은 계열의 고장)
 // CLAUDE_CONFIG_DIR(#577) 은 설치 시점이 아니라 이 스크립트 실행 시점에 반영.
 // Pure Node.js — 셸 의존 없음(Windows 동일 동작).
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync, writeSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { spawnSync } from "node:child_process";
@@ -16,6 +16,17 @@ function cfgDir() {
     return e.startsWith("~") ? resolve(homedir(), e.replace(/^~[/\\]?/, "")) : resolve(e);
   }
   return resolve(homedir(), ".claude");
+}
+
+// ponytail 모드 배지 — 플러그인 hooks/ponytail-statusline.sh 와 같은 형식/색.
+// 플래그 파일은 ponytail 훅이 기록, 없으면(= ponytail off) 배지 없음.
+function ponytailBadge() {
+  let mode;
+  try { mode = readFileSync(join(cfgDir(), ".ponytail-active"), "utf8").split("\n")[0].trim().toLowerCase(); }
+  catch { return ""; }
+  const color = mode === "ultra" ? 173 : 108;
+  const label = !mode || mode === "full" ? "PONYTAIL" : `PONYTAIL:${mode.toUpperCase()}`;
+  return `\x1b[38;5;${color}m[${label}]\x1b[0m `;
 }
 
 // 깨진 심볼릭 링크가 섞여 있어도 statusLine 전체가 죽지 않도록 예외를 삼킨다.
@@ -35,8 +46,11 @@ const versions = readdirSync(parent)
   });
 if (!versions.length) process.exit(0);
 
-// 별도 프로세스로 위임하고 stdin(세션 JSON)/stdout 을 그대로 물려준다.
+// 별도 프로세스로 위임하고 stdin(세션 JSON)은 그대로 물려준다.
 // in-process import 는 대시보드가 argv/main 판정을 할 경우 깨지므로 피한다.
+// stdout 은 받아서 첫 줄 맨 앞에 ponytail 배지를 붙인다(끝에 붙이면 긴 첫 줄에서 잘림).
+// writeSync: process.exit 직전 비동기 write 가 잘리는 것을 피한다.
 const target = join(parent, versions[versions.length - 1], "dist", "index.js");
-const r = spawnSync(process.execPath, [target], { stdio: "inherit" });
+const r = spawnSync(process.execPath, [target], { stdio: ["inherit", "pipe", "inherit"], encoding: "utf8" });
+if (r.stdout) writeSync(1, ponytailBadge() + r.stdout);
 process.exit(r.status ?? 0);

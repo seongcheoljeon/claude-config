@@ -19,8 +19,13 @@ done
 got="$(echo '{"model":{"display_name":"Opus 5"}}' | CLAUDE_CONFIG_DIR="$TMP" bun "$WRAPPER")"
 [ "$got" = "1.30.1|Opus 5" ] || { echo "FAIL: 최신 버전/stdin 전달 — got: $got" >&2; exit 1; }
 
+# ponytail 플래그가 있으면 첫 줄 앞에 배지
+echo full > "$TMP/.ponytail-active"
+got="$(echo '{"model":{"display_name":"Opus 5"}}' | CLAUDE_CONFIG_DIR="$TMP" bun "$WRAPPER")"
+[ "$got" = $'\e[38;5;108m[PONYTAIL]\e[0m 1.30.1|Opus 5' ] || { echo "FAIL: ponytail 배지 — got: $got" >&2; exit 1; }
+
 # 버전 폴더가 아예 없을 때: 출력 없이 exit 0 (statusLine 오류 표시를 만들지 않음)
 got="$(echo '{}' | CLAUDE_CONFIG_DIR="$TMP/none" bun "$WRAPPER")" || { echo "FAIL: 미설치 시 0 이 아닌 종료" >&2; exit 1; }
 [ -z "$got" ] || { echo "FAIL: 미설치인데 출력 있음 — $got" >&2; exit 1; }
 
-echo "OK: statusLine 래퍼 정상 (버전 숫자정렬 + stdin 전달 + 미설치 폴백)"
+echo "OK: statusLine 래퍼 정상 (버전 숫자정렬 + stdin 전달 + ponytail 배지 + 미설치 폴백)"
