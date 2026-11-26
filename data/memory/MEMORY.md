@@ -8,4 +8,5 @@
 - [WebFetch via context-mode](feedback_webfetch_via_context_mode.md) — WebFetch 대신 ctx_fetch_and_index 직행 (hook 차단 회피)
 - [Houdini Windows Env](reference_houdini_windows_env.md) — Houdini/uv/MCP bridge는 Windows 쪽, WSL interop로 제어
 - [No Codex](user_no_codex.md) — Codex 사용 중단·완전 제거(2026-11-23), 제안 금지
-- [rm Alias](feedback_rm_alias.md) — zsh rm=rm -i, Bash 도구에선 command rm -f 후 ls로 확인
+- [rm/cp Alias](feedback_rm_alias.md) — zsh rm=rm -i, cp=cp -i. Bash 도구에선 command rm -f / command cp -f 후 ls·cmp로 확인
+- [Custom Statusline Launcher](project_custom_statusline_launcher.md) — statusLine은 자작 bun 런처, dashboard update로 덮어쓰기 금지

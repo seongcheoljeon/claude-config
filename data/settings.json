@@ -97,7 +97,14 @@
   "tui": "fullscreen",
   "editorMode": "vim",
   "skipAutoPermissionPrompt": true,
-  "model": "claude-fable-5[1m]",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    },
+    "claude-fable-5-2": {
+      "effortLevel": "high"
+    }
+  },
   "theme": "dark",
   "voice": {
     "enabled": true,
